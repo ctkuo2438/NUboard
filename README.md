@@ -1,4 +1,4 @@
-# NUwork projecrt
+# NUboard projecrt
 ## Team members: Liu, kiki, Jinxiang, Andy
 
 - Frontend: React.js
