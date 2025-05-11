@@ -3,7 +3,7 @@
 
 - Frontend: React.js
 
-- Backend: Java + Sring
+- Backend: Java + Spring Boot
 
 - DB: postgresql
 
