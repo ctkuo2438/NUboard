@@ -1,17 +1,12 @@
 # NUboard projecrt
-## Team members: Liu, kiki, Jinxiang, Andy
 
-- Frontend: React.js
-- Backend: Java + Spring Boot
-- DB: postgresql
-
-## Week1 progress: Event Service
+## 🎯 Week1 progress: Event Service
 
 - POST /api/events: Create a new event.
 - GET /api/events: List all events.
 - POST /api/events/{id}/register: Register for an event.
 
-## Technologies Used
+## 🔧 Technologies Used
 
 *   **Language**: Java 17
 *   **Framework**: Spring Boot
@@ -85,6 +80,10 @@ Key components of the project include:
 *   `com.neu.nuboard.utils.UUIDutil`: Utility for generating UUIDs.
 
 
+---
+🙎 Team members: Liu, kiki, Jinxiang, Andy
+
+📒 Andy's Notion Note: [NUboard](https://www.notion.so/NUboard-1e0032a1db1280878940d0b92bd2a753)
 
 
 
