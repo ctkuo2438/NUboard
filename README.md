@@ -5,7 +5,7 @@
 - Backend: Java + Spring Boot
 - DB: postgresql
 
-## Week1 proress: Event Service
+## Week1 progress: Event Service
 
 - POST /api/events: Create a new event.
 - GET /api/events: List all events.
