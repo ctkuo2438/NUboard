@@ -32,7 +32,7 @@ public class EventService {
     public EventResponseDTO createEvent(EventCreateDTO eventCreateDTO) {
         // Validate input
         if (eventCreateDTO.getTitle() == null || eventCreateDTO.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Event title cannot be null or empty");
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR);
         }
         if (eventCreateDTO.getEventDate() == null) {
             throw new IllegalArgumentException("Event date cannot be null");
