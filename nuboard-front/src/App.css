@@ -1,0 +1,8 @@
+.form{
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+}
+
+.create-button{
+    grid-column: span 6;
+}
