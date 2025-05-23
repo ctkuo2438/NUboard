@@ -2,6 +2,7 @@ package com.neu.nuboard.dto;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * DTO for returning event details in API responses.
@@ -64,4 +65,8 @@ public class EventResponseDTO {
      */
     public Set<String> getParticipants() { return participants; }
     public void setParticipants(Set<String> participants) { this.participants = participants; }
+    public void setCreatorId(UUID id2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setCreatorId'");
+    }
 }
