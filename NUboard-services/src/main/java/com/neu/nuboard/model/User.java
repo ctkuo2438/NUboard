@@ -13,11 +13,8 @@ public class User {
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
-
-    @ManyToMany(mappedBy = "participants")
-    private Set<Event> events = new HashSet<>();
 
     /**
      * Default no-arg constructor required by JPA.
@@ -30,21 +27,10 @@ public class User {
      * Constructor for a fully specified user.
      *
      * @param username The username of the user.
-     * @param events The set of events the user is participating in.
-     */
-    public User(String username, Set<Event> events) {
-        this.id = UUIDutil.getId();
-        this.setUsername(username);
-        this.events = (events != null) ? events : new HashSet<>();
-    }
-
-    /**
-     * Constructs a basic user with only required fields.
-     *
-     * @param username The username of the user.
      */
     public User(String username) {
-        this(username, new HashSet<>());
+        this.id = UUIDutil.getId();
+        this.setUsername(username);
     }
 
     // Getters and Setters
@@ -68,15 +54,6 @@ public class User {
     }
 
     /**
-     * Get the set of events the user is participating in.
-     * @return The set of events.
-     */
-    public Set<Event> getEvents() { return events; }
-    public void setEvents(Set<Event> events) {
-        this.events = (events != null) ? events : new HashSet<>();
-    }
-
-    /**
      * Validates that required fields are present and not empty.
      * @return True if the user is valid, false otherwise.
      */
@@ -89,7 +66,6 @@ public class User {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", events=" + events +
                 '}';
     }
 }

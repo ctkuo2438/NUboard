@@ -1,5 +1,6 @@
 package com.neu.nuboard.dto;
 
+import com.neu.nuboard.model.Event.OrganizerType;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -8,20 +9,23 @@ import java.util.Set;
  */
 public class EventResponseDTO {
 
-    private String id;
+    private Long id;
     private String title;
     private String description;
-    private LocalDateTime eventDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String location;
-    private String creatorId; // 返回創建者的 ID
-    private Set<String> participants; // 返回參加者的 ID 集合
+    private String address;
+    private String creatorId;
+    private Set<String> participants;
+    private OrganizerType organizerType;
 
     /**
      * Get the ID of the event.
      * @return The ID of the event.
      */
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     /**
      * Get the title of the event.
@@ -38,11 +42,18 @@ public class EventResponseDTO {
     public void setDescription(String description) { this.description = description; }
 
     /**
-     * Get the date of the event.
-     * @return The date of the event.
+     * Get the start time of the event.
+     * @return The start time of the event.
      */
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
+    public LocalDateTime getStartTime() { return startTime; }
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+
+    /**
+     * Get the end time of the event.
+     * @return The end time of the event.
+     */
+    public LocalDateTime getEndTime() { return endTime; }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 
     /**
      * Get the location of the event.
@@ -52,16 +63,30 @@ public class EventResponseDTO {
     public void setLocation(String location) { this.location = location; }
 
     /**
-     * Get the ID of the creator.
-     * @return The ID of the creator.
+     * Get the address of the event.
+     * @return The address of the event.
+     */
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    /**
+     * Get the creator of the event.
+     * @return The name of the creator.
      */
     public String getCreatorId() { return creatorId; }
     public void setCreatorId(String creatorId) { this.creatorId = creatorId; }
 
     /**
-     * Get the set of participant IDs of the event.
-     * @return The set of participant IDs.
+     * Get the participants of the event.
+     * @return The set of participant usernames.
      */
     public Set<String> getParticipants() { return participants; }
     public void setParticipants(Set<String> participants) { this.participants = participants; }
+
+    /**
+     * Get the organizer type of the event.
+     * @return The organizer type of the event.
+     */
+    public OrganizerType getOrganizerType() { return organizerType; }
+    public void setOrganizerType(OrganizerType organizerType) { this.organizerType = organizerType; }
 }
