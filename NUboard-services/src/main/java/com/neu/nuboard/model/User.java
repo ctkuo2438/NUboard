@@ -1,95 +1,148 @@
 package com.neu.nuboard.model;
 
-import com.neu.nuboard.utils.UUIDutil;
-import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
+import com.neu.nuboard.exception.BusinessException;
+import com.neu.nuboard.exception.ErrorCode;
+import com.neu.nuboard.utils.UUIDutil;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "users")
 public class User {
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    private String id;
+    private UUID id;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
+
+    @ManyToOne
+    @JoinColumn(name = "college_id", nullable = false)
+    private College college;
+
+    @Column(name = "program", nullable = false)
+    private String program;
+
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @ManyToMany(mappedBy = "participants")
     private Set<Event> events = new HashSet<>();
 
     /**
-     * Default no-arg constructor required by JPA.
+     * JPA要求的默认无参构造函数。
      */
     protected User() {
         this.id = UUIDutil.getId();
+        this.events = new HashSet<>();
     }
 
     /**
-     * Constructor for a fully specified user.
+     * 创建一个完整参数的用户构造函数。
      *
-     * @param username The username of the user.
-     * @param events The set of events the user is participating in.
+     * @param username 用户名。
+     * @param program 用户所学专业。
+     * @param email 用户邮箱。
+     * @param events 用户参与的事件集合。
      */
-    public User(String username, Set<Event> events) {
+    public User(String username, String program, String email, Set<Event> events)  {
         this.id = UUIDutil.getId();
         this.setUsername(username);
+        this.setProgram(program);
+        this.setEmail(email);
         this.events = (events != null) ? events : new HashSet<>();
     }
 
     /**
-     * Constructs a basic user with only required fields.
+     * 创建一个包含所有必需字段但事件集合为空的用户。
      *
-     * @param username The username of the user.
+     * @param username 用户名。
+     * @param program 用户所学专业。
+     * @param email 用户邮箱。
      */
-    public User(String username) {
-        this(username, new HashSet<>());
+    public User(String username, String program, String email) {
+        this(username, program, email, new HashSet<>());
     }
+    
+    // Getters
+    public UUID getId() { return id; }
 
-    // Getters and Setters
-    /**
-     * Get the ID of the user.
-     * @return The ID of the user.
-     */
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    /**
-     * Get the username of the user.
-     * @return The username of the user.
-     */
     public String getUsername() { return username; }
     public void setUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty.");
+            throw new BusinessException(ErrorCode.EMPTY_USERNAME);
+        }
+        if (username.length() > 255) {
+            throw new BusinessException(ErrorCode.OVER_MAX_LENGTH);
         }
         this.username = username;
     }
 
-    /**
-     * Get the set of events the user is participating in.
-     * @return The set of events.
-     */
-    public Set<Event> getEvents() { return events; }
-    public void setEvents(Set<Event> events) {
-        this.events = (events != null) ? events : new HashSet<>();
+    public Location getLocation() { return location; }
+    public void setLocation(Location location) {
+        if (location == null) {
+            throw new BusinessException(ErrorCode.INVALID_LOCATION);
+        }
+        this.location = location;
     }
 
-    /**
-     * Validates that required fields are present and not empty.
-     * @return True if the user is valid, false otherwise.
-     */
-    public boolean validate() {
-        return username != null && !username.trim().isEmpty();
+    public College getCollege() { return college; }     
+    public void setCollege(College college) {
+        if (college == null) {
+            throw new BusinessException(ErrorCode.INVALID_PROGRAM);
+        }
+        this.college = college;
     }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.EMPTY_EMAIL);
+        }
+        if (email.length() > 320) {
+            throw new BusinessException(ErrorCode.OVER_MAX_LENGHT_EMAIL);
+        }
+        if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            throw new BusinessException(ErrorCode.INVALID_EMAIL);
+        }
+        this.email = email;
+    }
+
+    public String getProgram() { return program; }
+    public void setProgram(String program) {
+        if (program == null || program.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.EMPTY_PROGRAM);
+        }
+        this.program = program;
+    }
+
+    public Set<Event> getEvents() { return events; }
+    public void setEvents(Set<Event> events) { this.events = events; }
 
     @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", events=" + events +
+                ", location=" + location +
+                ", college=" + college +
+                ", program='" + program + '\'' +
+                ", email='" + email + '\'' +
+                ", events.size=" + (events != null ? events.size() : "0") +
                 '}';
     }
 }

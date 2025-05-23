@@ -1,20 +1,20 @@
 package com.neu.nuboard.service;
 
-import com.neu.nuboard.dto.EventCreateDTO;
-import com.neu.nuboard.dto.EventResponseDTO;
-import com.neu.nuboard.exception.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.neu.nuboard.exception.BusinessException;
+import com.neu.nuboard.exception.ErrorCode;
 import com.neu.nuboard.model.Event;
 import com.neu.nuboard.model.User;
 import com.neu.nuboard.repository.EventRepository;
-import org.springframework.stereotype.Service;
+import com.neu.nuboard.repository.UserRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Service class for managing event-related business logic.
- */
 @Service
 public class EventService {
     // eventRepository is an object that implements the EventRepository interface for CRUD operations on the event table.
@@ -44,72 +44,39 @@ public class EventService {
             throw new IllegalArgumentException("Creator ID cannot be null or empty");
         }
 
-        // Map EventCreateDTO to Event entity
-        User creator = new User("temp-user"); // temporary username
-        creator.setId(eventCreateDTO.getCreatorId());
-        Event event = new Event(
-                eventCreateDTO.getTitle(),
-                eventCreateDTO.getDescription(),
-                eventCreateDTO.getEventDate(),
-                eventCreateDTO.getLocation(),
-                creator,
-                new HashSet<>()
-        );
+    @Autowired
+    private UserRepository userRepository;
 
-        // Save the event to the database
-        Event savedEvent = eventRepository.save(event);
-
-        // Map saved Event to EventResponseDTO
-        return mapToResponseDTO(savedEvent);
+    @Transactional
+    public Event createEvent(Event event) {
+        return eventRepository.save(event);
     }
 
-    /**
-     * Retrieves all events from the database.
-     * @return List of EventResponseDTO containing all event details.
-     */
-    public List<EventResponseDTO> getAllEvents() {
-        return eventRepository.findAll()
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
     }
 
-    /**
-     * Registers a user for an event.
-     * @param eventId The ID of the event.
-     * @param userId The ID of the user to register.
-     */
-    public void registerForEvent(String eventId, String userId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + eventId));
-
-        // Create a User object for the participant
-        User participant = new User("temp-user"); // temporary username
-        participant.setId(userId);
-
-        // Add participant to the event
-        event.getParticipants().add(participant);
-        eventRepository.save(event);
+    public Event getEventById(String id) {
+        return eventRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
     }
 
-    /**
-     * Maps an Event entity to an EventResponseDTO.
-     * @param event The Event entity to map.
-     * @return EventResponseDTO containing the event details.
-     */
-    private EventResponseDTO mapToResponseDTO(Event event) {
-        EventResponseDTO responseDTO = new EventResponseDTO();
-        responseDTO.setId(event.getId());
-        responseDTO.setTitle(event.getTitle());
-        responseDTO.setDescription(event.getDescription());
-        responseDTO.setEventDate(event.getEventDate());
-        responseDTO.setLocation(event.getLocation());
-        responseDTO.setCreatorId(event.getCreator().getId());
-        responseDTO.setParticipants(
-                event.getParticipants().stream()
-                        .map(User::getId)
-                        .collect(Collectors.toSet())
-        );
-        return responseDTO;
+    @Transactional
+    public Event registerUserForEvent(String eventId, String userId) {
+        Event event = getEventById(eventId);
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (event.getParticipants().contains(user)) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_REGISTERED);
+        }
+
+        event.getParticipants().add(user);
+        return eventRepository.save(event);
     }
-}
+
+    public Set<User> getEventParticipants(String eventId) {
+        Event event = getEventById(eventId);
+        return event.getParticipants();
+    }
+} 
