@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "event") // psql table name
@@ -30,15 +29,22 @@ public class Event {
      * The description of the event.
      * description is an optional field.
      */
-    @Column(name = "description", nullable = true, columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     /**
-     * The date of the event.
-     * eventDate is a required field.
+     * The start time of the event.
+     * startTime is a required field.
      */
-    @Column(name = "event_date", nullable = false)
-    private LocalDateTime eventDate;
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
+    /**
+     * The end time of the event.
+     * endTime is a required field.
+     */
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
 
     /**
      * The location of the event.
@@ -48,28 +54,28 @@ public class Event {
     private String location;
 
     /**
+     * The type of organizer for the event (school or corporate).
+     * organizerType is a required field.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "organizer_type", nullable = false)
+    private OrganizerType organizerType;
+
+    /**
      * The creator of the event.
      * creator is an object of type User.
+     * one user can create many events.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
     /**
-     * The bridging table between the event and the user tables.
-     * Use the bridge table to handle the @ManyToMany relationship.
-     * Because a user can have multiple events. And an event could belong to many users.
-     * User -||---|< event_registration >|---||- Event
+     * The set of registrations for this event.
+     * Each registration links a user to this event.
      */
-    @ManyToMany
-    @JoinTable(
-            name = "event_registration", // bridge table name
-            // event_id is the foreign key that references the event table's id
-            // user_id is the foreign key that references the user table's id
-            joinColumns = @JoinColumn(name = "event_id"), // event_id is the event table's id
-            inverseJoinColumns = @JoinColumn(name = "user_id") // user_id is the user table's id
-    )
-    private Set<User> participants = new HashSet<>();
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventRegistration> registrations = new HashSet<>();
 
     /**
      * Default no-arg constructor required by JPA.
@@ -83,30 +89,39 @@ public class Event {
      *
      * @param title The title of the event.
      * @param description The description of the event.
-     * @param eventDate The date of the event.
+     * @param startTime The start time of the event.
+     * @param endTime The end time of the event.
      * @param location The location of the event.
+     * @param organizerType The type of organizer (school or corporate).
      * @param creator The creator of the event.
      */
-    public Event(String title, String description, LocalDateTime eventDate, String location, User creator, Set<User> participants) {
+    public Event(String title, String description, LocalDateTime startTime,
+                 LocalDateTime endTime, String location, OrganizerType organizerType, User creator) {
         this.id = UUIDutil.getId();
         this.setTitle(title);
         this.description = description;
-        this.setEventDate(eventDate);
+        this.setStartTime(startTime);
+        this.setEndTime(endTime);
         this.setLocation(location);
+        this.setOrganizerType(organizerType);
         this.setCreator(creator);
-        this.participants = (participants != null) ? participants : new HashSet<>();
+        this.registrations = new HashSet<>();
     }
 
     /**
-     * constructors a basic event with only required fields.
+     * Constructs a basic event with only required fields.
      *
      * @param title The title of the event.
      * @param eventDate The date of the event.
+     * @param startTime The start time of the event.
+     * @param endTime The end time of the event.
      * @param location The location of the event.
+     * @param organizerType The type of organizer (school or corporate).
      * @param creator The creator of the event.
      */
-    public Event(String title, LocalDateTime eventDate, String location, User creator) {
-        this(title, "", eventDate, location, creator, new HashSet<>());
+    public Event(String title, LocalDateTime eventDate, LocalDateTime startTime, LocalDateTime endTime,
+                 String location, OrganizerType organizerType, User creator) {
+        this(title, "", startTime, endTime, location, organizerType, creator);
     }
 
     // Getters and Setters
@@ -137,15 +152,27 @@ public class Event {
     public void setDescription(String description) { this.description = description; }
 
     /**
-     * Get the date of the event.
-     * @return The date of the event.
+     * Get the start time of the event.
+     * @return The start time of the event.
      */
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) {
-        if (eventDate == null) {
-            throw new IllegalArgumentException("Event date cannot be null.");
+    public LocalDateTime getStartTime() { return startTime; }
+    public void setStartTime(LocalDateTime startTime) {
+        if (startTime == null) {
+            throw new IllegalArgumentException("Start time cannot be null.");
         }
-        this.eventDate = eventDate;
+        this.startTime = startTime;
+    }
+
+    /**
+     * Get the end time of the event.
+     * @return The end time of the event.
+     */
+    public LocalDateTime getEndTime() { return endTime; }
+    public void setEndTime(LocalDateTime endTime) {
+        if (endTime == null) {
+            throw new IllegalArgumentException("End time cannot be null.");
+        }
+        this.endTime = endTime;
     }
 
     /**
@@ -161,6 +188,18 @@ public class Event {
     }
 
     /**
+     * Get the organizer type of the event.
+     * @return The organizer type of the event.
+     */
+    public OrganizerType getOrganizerType() { return organizerType; }
+    public void setOrganizerType(OrganizerType organizerType) {
+        if (organizerType == null) {
+            throw new IllegalArgumentException("Organizer type cannot be null.");
+        }
+        this.organizerType = organizerType;
+    }
+
+    /**
      * Get the creator of the event.
      * @return The creator of the event.
      */
@@ -173,12 +212,12 @@ public class Event {
     }
 
     /**
-     * Get the set of participants of the event.
-     * @return The set of participants of the event.
+     * Get the set of registrations for this event.
+     * @return The set of registrations.
      */
-    public Set<User> getParticipants() { return participants; }
-    public void setParticipants(Set<User> participants) {
-        this.participants = (participants != null) ? participants : new HashSet<>();
+    public Set<EventRegistration> getRegistrations() { return registrations; }
+    public void setRegistrations(Set<EventRegistration> registrations) {
+        this.registrations = (registrations != null) ? registrations : new HashSet<>();
     }
 
     /**
@@ -187,8 +226,10 @@ public class Event {
      */
     public boolean validate() {
         return title != null && !title.trim().isEmpty() &&
-                eventDate != null &&
+                startTime != null &&
+                endTime != null &&
                 location != null && !location.trim().isEmpty() &&
+                organizerType != null &&
                 creator != null;
     }
 
@@ -201,10 +242,12 @@ public class Event {
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", eventDate=" + eventDate +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 ", location='" + location + '\'' +
+                ", organizerType=" + organizerType +
                 ", creator=" + creator +
-                ", participants=" + participants +
+                ", registrations=" + registrations +
                 '}';
     }
 }

@@ -1,6 +1,8 @@
 package com.neu.nuboard.dto;
 
+import com.neu.nuboard.model.OrganizerType;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -11,10 +13,45 @@ public class EventResponseDTO {
     private String id;
     private String title;
     private String description;
-    private LocalDateTime eventDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String location;
-    private String creatorId; // 返回創建者的 ID
-    private Set<String> participants; // 返回參加者的 ID 集合
+    private OrganizerType organizerType;
+    private String creatorId;
+    private Set<String> participants;
+
+    /**
+     * Default no-arg constructor required by JPA.
+     */
+    public EventResponseDTO() {
+        this.participants = new HashSet<>();
+    }
+
+    /**
+     * Constructor with all fields.
+     *
+     * @param id The ID of the event.
+     * @param title The title of the event.
+     * @param description The description of the event.
+     * @param startTime The start time of the event.
+     * @param endTime The end time of the event.
+     * @param location The location of the event.
+     * @param organizerType The type of organizer (school or corporate).
+     * @param creatorId The ID of the creator.
+     * @param participants The set of participant IDs.
+     */
+    public EventResponseDTO(String id, String title, String description, LocalDateTime startTime, LocalDateTime endTime,
+                            String location, OrganizerType organizerType, String creatorId, Set<String> participants) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.location = location;
+        this.organizerType = organizerType;
+        this.creatorId = creatorId;
+        this.participants = (participants != null) ? participants : new HashSet<>();
+    }
 
     /**
      * Get the ID of the event.
@@ -38,11 +75,18 @@ public class EventResponseDTO {
     public void setDescription(String description) { this.description = description; }
 
     /**
-     * Get the date of the event.
-     * @return The date of the event.
+     * Get the start time of the event.
+     * @return The start time of the event.
      */
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
+    public LocalDateTime getStartTime() { return startTime; }
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+
+    /**
+     * Get the end time of the event.
+     * @return The end time of the event.
+     */
+    public LocalDateTime getEndTime() { return endTime; }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 
     /**
      * Get the location of the event.
@@ -50,6 +94,13 @@ public class EventResponseDTO {
      */
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+
+    /**
+     * Get the organizer type of the event.
+     * @return The organizer type of the event.
+     */
+    public OrganizerType getOrganizerType() { return organizerType; }
+    public void setOrganizerType(OrganizerType organizerType) { this.organizerType = organizerType; }
 
     /**
      * Get the ID of the creator.
@@ -63,5 +114,7 @@ public class EventResponseDTO {
      * @return The set of participant IDs.
      */
     public Set<String> getParticipants() { return participants; }
-    public void setParticipants(Set<String> participants) { this.participants = participants; }
+    public void setParticipants(Set<String> participants) {
+        this.participants = (participants != null) ? participants : new HashSet<>();
+    }
 }

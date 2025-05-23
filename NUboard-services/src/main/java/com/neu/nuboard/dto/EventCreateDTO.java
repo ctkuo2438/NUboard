@@ -1,16 +1,21 @@
 package com.neu.nuboard.dto;
+
+import com.neu.nuboard.model.OrganizerType;
 import java.time.LocalDateTime;
 
 /**
- * DTO(Data Transfer Object) for creating an event.
- * only required fields are provided from the client.
- * different from Event.java, EventCreateDTO is not a JPA entity.
- * */
+ * DTO (Data Transfer Object) for creating an event.
+ * Only required fields are provided from the client.
+ * Different from Event.java, EventCreateDTO is not a JPA entity.
+ */
 public class EventCreateDTO {
+
     private String title;
     private String description;
-    private LocalDateTime eventDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String location;
+    private OrganizerType organizerType;
     private String creatorId;
 
     /**
@@ -28,11 +33,18 @@ public class EventCreateDTO {
     public void setDescription(String description) { this.description = description; }
 
     /**
-     * Get the date of the event.
-     * @return The date of the event.
+     * Get the start time of the event.
+     * @return The start time of the event.
      */
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
+    public LocalDateTime getStartTime() { return startTime; }
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+
+    /**
+     * Get the end time of the event.
+     * @return The end time of the event.
+     */
+    public LocalDateTime getEndTime() { return endTime; }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 
     /**
      * Get the location of the event.
@@ -40,6 +52,13 @@ public class EventCreateDTO {
      */
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+
+    /**
+     * Get the organizer type of the event.
+     * @return The organizer type of the event.
+     */
+    public OrganizerType getOrganizerType() { return organizerType; }
+    public void setOrganizerType(OrganizerType organizerType) { this.organizerType = organizerType; }
 
     /**
      * Get the ID of the creator.
