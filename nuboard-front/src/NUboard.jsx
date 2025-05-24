@@ -9,8 +9,12 @@ function NUboard(){
     const [newEvent, setNewEvent] = useState({
         title: "",
         description: "",
-        eventDate: "",
-        location: ""
+        startTime: "",
+        endTime: "",
+        location: "",
+        address: "",
+        creatorId:"",
+        organizerType:"SCHOOL",
     });
     const creationRef = useRef();
     const registrationRef = useRef();
@@ -21,16 +25,24 @@ function NUboard(){
         await axios.post('http://localhost:8080/api/events', {
             title: newEvent.title,
             description: newEvent.description,
-            event_date: newEvent.eventDate,
+            startTime: newEvent.startTime,
+            endTime: newEvent.endTime,
             location: newEvent.location,
+            address: newEvent.address,
+            creatorId: newEvent.creatorId,
+            organizerType: newEvent.organizerType,
         });
   
         // Only saving after successful submission
         setNewEvent({
-        title: "",
-        description: "",
-        eventDate: "",
-        location: "",
+          title: "",
+          description: "",
+          startTime: "",
+          endTime: "",
+          location: "",
+          address: "",
+          creatorId:"",
+          organizerType:"SCHOOL",
         });
   
         creationRef.current.close();
@@ -106,22 +118,50 @@ function NUboard(){
       <div className='form'>
         <button type="button" onClick={() => creationRef.current.showModal()} className='create-button'>Create Event</button>
         <dialog ref={creationRef}>
-          <label htmlFor={`${id}-title`}>Title: </label>
-          <input type="text" id={`${id}-title`} onChange={(e) => inputNewEvent(e, "title")} />
+          <div>
+            <label htmlFor={`${id}-title`}>Title: </label>
+            <input type="text" id={`${id}-title`} onChange={(e) => inputNewEvent(e, "title")} />
+          </div>
 
-          <label htmlFor={`${id}-description`}>Description: </label>
-          <input type="text" id={`${id}-description`} onChange={(e) => inputNewEvent(e, "description")}/>
+          <div>
+            <label htmlFor={`${id}-description`}>Description: </label>
+            <input type="text" id={`${id}-description`} onChange={(e) => inputNewEvent(e, "description")}/>
+          </div>
 
-          <label htmlFor={`${id}-location`}>Location: </label>
-          <input type="text" id={`${id}-location`} onChange={(e) => inputNewEvent(e, "location")}/>
+          <div>
+            <label htmlFor={`${id}-location`}>Location: </label>
+            <input type="text" id={`${id}-location`} onChange={(e) => inputNewEvent(e, "location")}/>
+          </div>
 
-          <label htmlFor={`${id}-event-date`}>Description: </label>
-          <input 
-            type="text" 
-            id={`${id}-event-date`}
-            placeholder='Example: 2025-05-10T19:00:00'
-            onChange={(e) => inputNewEvent(e, "eventDate")}
-          />
+          <div>
+            <label htmlFor={`${id}-location`}>Address: </label>
+            <input type="text" id={`${id}-location`} onChange={(e) => inputNewEvent(e, "address")}/>
+          </div>
+
+          <div>
+            <label htmlFor={`${id}-creator-id`}>Creator ID: </label>
+            <input type="text" id={`${id}-creator-id`} onChange={(e) => inputNewEvent(e, "creatorId")}/>
+          </div>
+
+          <div>
+            <label htmlFor={`${id}-start-time`}>StartTime: </label>
+            <input 
+              type="text" 
+              id={`${id}-start-time`}
+              placeholder='Example: 2025-05-10T19:00:00'
+              onChange={(e) => inputNewEvent(e, "startTime")}
+            />
+          </div>
+
+          <div>
+            <label htmlFor={`${id}-end-time`}>EndTime: </label>
+            <input 
+              type="text" 
+              id={`${id}-end-time`}
+              placeholder='Example: 2025-05-10T19:00:00'
+              onChange={(e) => inputNewEvent(e, "endTime")}
+            />
+          </div>
 
           <button type="button" onClick={saveEvent}>
             Save
@@ -132,19 +172,26 @@ function NUboard(){
           </button>
         </dialog>
 
-        <p>ID</p>
-        <p>Title</p>
-        <p>Description</p>
-        <p>Event Date</p>
+        <p>title</p>
+        <p>description</p>
+        <p>start time</p>
+        <p>end time</p>
         <p>Location</p>
+        <p>address</p>
+        <p>creatorid</p>
+        <p>organizerType</p>
         <p></p>
+
         {events.map((event) => 
           <React.Fragment key={event.id}>
-            <p>{event.id}</p>
             <p>{event.title}</p>
             <p>{event.description}</p>
-            <p>{event.event_date}</p>
+            <p>{event.startTime}</p>
+            <p>{event.endTime}</p>
             <p>{event.location}</p>
+            <p>{event.address}</p>
+            <p>{event.creatorId}</p>
+            <p>{event.organizerType}</p>
 
             <div>
               <button type="button" onClick={() => openRegistrationModal(event)}>Register</button>
@@ -186,3 +233,4 @@ function NUboard(){
 }
 
 export default NUboard;
+
