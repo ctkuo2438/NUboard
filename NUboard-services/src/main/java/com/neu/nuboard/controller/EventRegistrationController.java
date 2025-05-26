@@ -42,8 +42,7 @@ public class EventRegistrationController {
             @RequestParam("userId") String userId) {
         registrationService.registerForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(null, eventId, userId);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SuccessResponse<>(responseDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(responseDTO));
     }
 
     /**

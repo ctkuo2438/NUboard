@@ -28,19 +28,19 @@ public enum ErrorCode {
      * Indicates that the specified user was not found.
      * HttpStatus 404 Not Found.
      */
-    USER_NOT_FOUND(2001, "User not found", HttpStatus.NOT_FOUND),
+    // USER_NOT_FOUND(2001, "User not found", HttpStatus.NOT_FOUND),
 
     // Event Errors (3xxx)
     /**
      * Indicates that the specified event was not found.
      * HttpStatus 404 Not Found.
      */
-    EVENT_NOT_FOUND(3001, "Event not found", HttpStatus.NOT_FOUND),
+    // EVENT_NOT_FOUND(3001, "Event not found", HttpStatus.NOT_FOUND),
     /**
      * Indicates that the time range for querying events is invalid (e.g., start time is after end time).
      * HttpStatus 400 Bad Request.
      */
-    INVALID_TIME_RANGE(3002, "Start time must be before end time", HttpStatus.BAD_REQUEST),
+    // INVALID_TIME_RANGE(3002, "Start time must be before end time", HttpStatus.BAD_REQUEST),
 
     // Registration Errors (4xxx)
     /**
