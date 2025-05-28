@@ -1,6 +1,7 @@
 package com.neu.nuboard.model;
 
 import jakarta.persistence.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String name;
@@ -26,7 +27,7 @@ public class Location {
     private List<Event> events;
 
     // Getter
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -55,7 +56,7 @@ public class Location {
         this.events = events;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }
