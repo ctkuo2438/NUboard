@@ -4,6 +4,12 @@ spring:
     username: postgres
     password:
     driver-class-name: org.postgresql.Driver
+
+  sql:
+    init:
+      mode: always     # ✅ 替代旧版 initialization-mode
+      platform: postgres # ✅ 确保识别 PostgreSQL（可选）
+
   jpa:
     hibernate:
       ddl-auto: update # auto update db
