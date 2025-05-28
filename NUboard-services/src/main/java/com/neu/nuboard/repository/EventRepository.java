@@ -17,7 +17,7 @@ import java.util.List;
  * findById() method is used to retrieve an event by its id.
  */
 @Repository
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, String> {
 
     /**
      * Search events by keyword in title or description.

@@ -10,6 +10,8 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(1003, "Resource Not Found", HttpStatus.NOT_FOUND),
     DATABASE_ERROR(1004, "Database Operation Failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
+
+
     // Event Error 3xxx
     EVENT_NOT_FOUND(3001, "Event Not Found", HttpStatus.NOT_FOUND),
     EVENT_INVALID_TIME(3002, "Invalid Event Time", HttpStatus.BAD_REQUEST),

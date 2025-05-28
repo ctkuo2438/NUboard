@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class EventResponseDTO {
 
-    private Long id;
+    private String id;
     private String title;
     private String description;
     private LocalDateTime startTime;
@@ -24,8 +24,8 @@ public class EventResponseDTO {
      * Get the ID of the event.
      * @return The ID of the event.
      */
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     /**
      * Get the title of the event.
