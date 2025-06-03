@@ -51,10 +51,10 @@ public class EventRegistrationService {
     public void registerForEvent(String eventId, String userId) {
         // Validate input
         if (eventId == null || eventId.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
         if (userId == null || userId.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
 
         // Find the event and user
@@ -87,10 +87,10 @@ public class EventRegistrationService {
     public void unregisterForEvent(String eventId, String userId) {
         // Validate input
         if (eventId == null || eventId.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
         if (userId == null || userId.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
 
         // Find the registration
@@ -110,7 +110,7 @@ public class EventRegistrationService {
      */
     public List<EventRegistrationDTO> getRegistrationsByEventId(String eventId) {
         if (eventId == null || eventId.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
         return registrationRepository.findByEventId(eventId)
                 .stream()
@@ -127,7 +127,7 @@ public class EventRegistrationService {
      */
     public List<EventRegistrationDTO> getRegistrationsByUserId(String userId) {
         if (userId == null || userId.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
         return registrationRepository.findByUserId(userId)
                 .stream()
@@ -157,7 +157,7 @@ public class EventRegistrationService {
         return new EventRegistrationDTO(
                 registration.getId(),
                 registration.getEvent().getId(),
-                registration.getUser().getId()
+                registration.getUser().getId().toString()
         );
     }
 }
