@@ -1,11 +1,10 @@
 package com.neu.nuboard.service;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.neu.nuboard.utils.UUIDutil;
 import com.neu.nuboard.dto.UserCreateDTO;
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
@@ -43,7 +42,7 @@ public class UserService {
      * @throws BusinessException 如果用户不存在
      */
     public User getUserById(String id) {
-        return userRepository.findById(UUID.fromString(id))
+        return userRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -86,7 +85,7 @@ public class UserService {
      */
     public User updateUser(String id, UserCreateDTO userDTO) {
         // 查找要更新的用户
-        User user = userRepository.findById(UUID.fromString(id))
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
         // 如果用户名变更了，检查是否已存在
@@ -121,12 +120,12 @@ public class UserService {
      */
     public void deleteUser(String id) {
         // 检查用户是否存在
-        if (!userRepository.existsById(UUID.fromString(id))) {
+        if (!userRepository.existsById(id)) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         
         // 删除用户
-        userRepository.deleteById(UUID.fromString(id));
+        userRepository.deleteById(id);
     }
     
     /**
@@ -149,18 +148,18 @@ public class UserService {
     public List<User> searchUsers(String keyword) {
         try {
             if (keyword == null || keyword.trim().isEmpty()) {
-                throw new BusinessException(ErrorCode.SEARCH_KEYWORD_EMPTY);
+                throw new BusinessException(ErrorCode.USER_SEARCH_KEYWORD_EMPTY);
             }
             
             // 验证关键字格式
             if (keyword.length() > 255) {
-                throw new BusinessException(ErrorCode.SEARCH_INVALID_KEYWORD);
+                throw new BusinessException(ErrorCode.USER_SEARCH_INVALID_KEYWORD);
             }
             
             List<User> users = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword.trim(), keyword.trim());
             
             if (users.isEmpty()) {
-                throw new BusinessException(ErrorCode.SEARCH_NO_RESULTS);
+                throw new BusinessException(ErrorCode.USER_SEARCH_NO_RESULTS);
             }
             
             return users;

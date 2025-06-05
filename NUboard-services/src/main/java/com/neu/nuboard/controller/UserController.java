@@ -117,7 +117,7 @@ public class UserController {
         try {
             if ((username == null || username.trim().isEmpty()) && 
                 (email == null || email.trim().isEmpty())) {
-                throw new BusinessException(ErrorCode.SEARCH_KEYWORD_EMPTY);
+                throw new BusinessException(ErrorCode.USER_SEARCH_KEYWORD_EMPTY);
             }
             String keyword = (username != null && !username.trim().isEmpty()) ? username : email;
             List<User> users = userService.searchUsers(keyword);
