@@ -10,7 +10,8 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(1003, "Resource Not Found", HttpStatus.NOT_FOUND),
     DATABASE_ERROR(1004, "Database Operation Failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
-
+    // User Errors (2xxx)
+    USER_NOT_FOUND(2001, "User not found", HttpStatus.NOT_FOUND),
 
     // Event Error 3xxx
     EVENT_NOT_FOUND(3001, "Event Not Found", HttpStatus.NOT_FOUND),
@@ -20,9 +21,19 @@ public enum ErrorCode {
     EVENT_INVALID_ADDRESS(3005, "Invalid Event Address", HttpStatus.BAD_REQUEST),
     EVENT_INVALID_CREATOR(3006, "Invalid Event Creator", HttpStatus.BAD_REQUEST),
     EVENT_INVALID_ORGANIZER(3007, "Invalid Event Organizer", HttpStatus.BAD_REQUEST),
-    EVENT_ALREADY_EXISTS(3008, "Event Already Exists", HttpStatus.CONFLICT),
-    EVENT_PARTICIPANT_ALREADY_REGISTERED(3009, "Participant Already Registered for Event", HttpStatus.CONFLICT),
-    EVENT_PARTICIPANT_INVALID(3010, "Invalid Participant", HttpStatus.BAD_REQUEST);
+
+
+    // Registration Errors (4xxx)
+    /**
+     * Indicates that the user is already registered for the event.
+     * HttpStatus 409 Conflict.
+     */
+    ALREADY_REGISTERED(4001, "User already registered", HttpStatus.CONFLICT),
+    /**
+     * Indicates that the registration record for the specified event and user was not found.
+     * HttpStatus 404 Not Found.
+     */
+    REGISTRATION_NOT_FOUND(4002, "Registration not found", HttpStatus.NOT_FOUND);
 
     private final int code;
     private final String message;
