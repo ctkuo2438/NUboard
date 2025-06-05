@@ -2,7 +2,6 @@ package com.neu.nuboard.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
@@ -26,7 +25,7 @@ public class User {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
@@ -67,7 +66,7 @@ public class User {
     }
     
     // Getters
-    public UUID getId() { return id; }
+    public String getId() { return id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) {
