@@ -22,15 +22,27 @@ function NUboard(){
 
   async function saveEvent() {
     try {
+        /*
         await axios.post('http://localhost:8080/api/events', {
             title: newEvent.title,
             description: newEvent.description,
             startTime: newEvent.startTime,
             endTime: newEvent.endTime,
-            location: newEvent.location,
+            locationId: newEvent.location,
             address: newEvent.address,
             creatorId: newEvent.creatorId,
             organizerType: newEvent.organizerType,
+        });*/
+
+        await axios.post('http://localhost:8080/api/events', {
+            "title": "testTitle",
+            "description": "testdescription",
+            "startTime": "2024-03-20T 10:00:00",
+            "endTime": "2024-03-20T 12:00:00",
+            "locationId": 1,
+            "address": "testaddress",
+            "creatorId": "2c468402-72ed-4d62-a82e-ed3dcf661263",
+            "organizerType": "SCHOOL",
         });
   
         // Only saving after successful submission

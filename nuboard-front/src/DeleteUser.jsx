@@ -9,7 +9,7 @@ function DeleteUser(){
             .then(() => {
                 console.log("delete successfully");
             })
-            .catch((err) => {
+            .catch(() => {
                 console.error("Fail to delete, please try again");
             });
     }

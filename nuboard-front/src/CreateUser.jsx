@@ -6,8 +6,8 @@ function CreateUser(){
         username: "",
         email: "",
         program: "",
-        locationId: "",
-        collegeId: "",
+        locationId: null,
+        collegeId: null,
     });
 
     async function createUser(){
@@ -30,15 +30,14 @@ function CreateUser(){
                     'Content-Type': 'application/json'
                 }
             });
-            
 
             // Only saving after successful submission
             setNewUser({
                 username: "",
                 email: "",
                 program: "",
-                locationId: "",
-                collegeId: "",
+                locationId: null,
+                collegeId: null,
             });
 
         }
