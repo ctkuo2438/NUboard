@@ -2,8 +2,8 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/nuboard
 
-    username: postgres
-    password:
+    username: liu
+    password: 123456
     driver-class-name: org.postgresql.Driver
 
   sql:

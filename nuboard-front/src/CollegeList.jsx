@@ -8,7 +8,7 @@ function CollegeList(){
     function fetchColleges() {
         axios.get('http://localhost:8080/api/colleges')
             .then((response) => {
-                if (response.data.code !== 0){
+                if (response.data.code === 0){
                     setColleges(response.data.data);
                 }
                 else {
