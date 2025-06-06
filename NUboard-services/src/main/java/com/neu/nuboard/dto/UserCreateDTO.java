@@ -8,16 +8,13 @@ package com.neu.nuboard.dto;
 //3. 将业务对象转换为响应数据 - 例如，将实体类对象转回为DTO对象，在UserController中
 //4. 将响应数据返回给客户端 - 例如，将DTO对象转换为JSON格式返回给客户端，UserController做的
 
-import com.neu.nuboard.model.Location;
-import com.neu.nuboard.model.College;
-
 public class UserCreateDTO {
     // 用于接收请求的字段
     private String username;
     private String email;
     private String program;   
-    private Location location;
-    private College college;
+    private Long locationId;    
+    private Long collegeId;    
     // 用于响应的字段，在UserController中返回给客户端   
     private String id;
     private String locationName;
@@ -33,11 +30,11 @@ public class UserCreateDTO {
     public String getProgram() { return program; }
     public void setProgram(String program) { this.program = program; }
 
-    public Location getLocation() { return location; }
-    public void setLocation(Location location) { this.location = location; }
+    public Long getLocationId() { return locationId; }
+    public void setLocationId(Long locationId) { this.locationId = locationId; }
 
-    public College getCollege() { return college; }
-    public void setCollege(College college) { this.college = college; }
+    public Long getCollegeId() { return collegeId; }
+    public void setCollegeId(Long collegeId) { this.collegeId = collegeId; }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }

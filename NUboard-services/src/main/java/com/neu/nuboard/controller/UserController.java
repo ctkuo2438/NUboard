@@ -6,23 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.neu.nuboard.dto.UserCreateDTO;
-import com.neu.nuboard.model.User;
-import com.neu.nuboard.service.UserService;
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
 import com.neu.nuboard.exception.SuccessResponse;
+import com.neu.nuboard.model.User;
+import com.neu.nuboard.service.UserService;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -139,12 +141,12 @@ public class UserController {
      */
     private UserCreateDTO convertUserToDTO(User user) {
         UserCreateDTO dto = new UserCreateDTO();
-        dto.setId(user.getId().toString());
+        dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setProgram(user.getProgram());
-        dto.setLocation(user.getLocation());
-        dto.setCollege(user.getCollege());
+        dto.setLocationId(user.getLocation() != null ? user.getLocation().getId() : null);
+        dto.setCollegeId(user.getCollege() != null ? user.getCollege().getId() : null);
         dto.setLocationName(user.getLocation() != null ? user.getLocation().getName() : null);
         dto.setCollegeName(user.getCollege() != null ? user.getCollege().getName() : null);
         dto.setEventsCount(user.getRegistrations() != null ? user.getRegistrations().size() : 0);
