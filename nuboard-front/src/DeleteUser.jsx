@@ -20,7 +20,7 @@ function DeleteUser(){
             <input 
                 type="text"
                 placeholder='userid want to delete'
-                onChange={(e) => setUserId(e.target.value)} 
+                onChange={e => setUserId(e.target.value)} 
             />
             <button type="button" onClick={()=> deleteUser(userId)}>Delete User</button>
         </div>
