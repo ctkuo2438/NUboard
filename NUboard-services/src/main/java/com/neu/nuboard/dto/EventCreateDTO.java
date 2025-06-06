@@ -1,9 +1,15 @@
 package com.neu.nuboard.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
 import com.neu.nuboard.model.Event.OrganizerType;
+import com.neu.nuboard.model.Location;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * DTO(Data Transfer Object) for creating an event.
@@ -13,12 +19,17 @@ import java.time.LocalDateTime;
 public class EventCreateDTO {
     private String title;
     private String description;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String location;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private String startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private String endTime;
+    private Long locationId;
     private String address;
     private String creatorId;
-    private OrganizerType organizerType;
+    private String organizerType;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * Get the title of the event.
@@ -48,9 +59,16 @@ public class EventCreateDTO {
      * Get the start time of the event.
      * @return The start time of the event.
      */
-    public LocalDateTime getStartTime() { return startTime; }
-    public void setStartTime(LocalDateTime startTime) {
-        if (startTime == null) {
+    public LocalDateTime getStartTime() {
+        try {
+            return LocalDateTime.parse(startTime, formatter);
+        } catch (DateTimeParseException e) {
+            throw new BusinessException(ErrorCode.EVENT_INVALID_TIME);
+        }
+    }
+    
+    public void setStartTime(String startTime) {
+        if (startTime == null || startTime.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.EVENT_INVALID_TIME);
         }
         this.startTime = startTime;
@@ -60,27 +78,45 @@ public class EventCreateDTO {
      * Get the end time of the event.
      * @return The end time of the event.
      */
-    public LocalDateTime getEndTime() { return endTime; }
-    public void setEndTime(LocalDateTime endTime) {
-        if (endTime == null) {
+    public LocalDateTime getEndTime() {
+        try {
+            return LocalDateTime.parse(endTime, formatter);
+        } catch (DateTimeParseException e) {
             throw new BusinessException(ErrorCode.EVENT_INVALID_TIME);
         }
-        if (startTime != null && endTime.isBefore(startTime)) {
+    }
+    
+    public void setEndTime(String endTime) {
+        if (endTime == null || endTime.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.EVENT_INVALID_TIME);
+        }
+        try {
+            LocalDateTime end = LocalDateTime.parse(endTime, formatter);
+            if (startTime != null) {
+                LocalDateTime start = LocalDateTime.parse(startTime, formatter);
+                if (end.isBefore(start)) {
+                    throw new BusinessException(ErrorCode.EVENT_INVALID_TIME);
+                }
+            }
+        } catch (DateTimeParseException e) {
             throw new BusinessException(ErrorCode.EVENT_INVALID_TIME);
         }
         this.endTime = endTime;
     }
 
     /**
-     * Get the location of the event.
-     * @return The location of the event.
+     * Get the location ID of the event.
+     * @return The location ID of the event.
      */
-    public String getLocation() { return location; }
-    public void setLocation(String location) {
-        if (location == null || location.trim().isEmpty() || location.length() > 255) {
+    public Long getLocationId() { 
+        return locationId;
+    }
+    
+    public void setLocationId(Long locationId) {
+        if (locationId == null) {
             throw new BusinessException(ErrorCode.EVENT_INVALID_LOCATION);
         }
-        this.location = location;
+        this.locationId = locationId;
     }
 
     /**
@@ -111,9 +147,21 @@ public class EventCreateDTO {
      * Get the organizer type of the event.
      * @return The organizer type of the event.
      */
-    public OrganizerType getOrganizerType() { return organizerType; }
-    public void setOrganizerType(OrganizerType organizerType) {
-        if (organizerType == null) {
+    public OrganizerType getOrganizerType() {
+        try {
+            return OrganizerType.valueOf(organizerType);
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.EVENT_INVALID_ORGANIZER);
+        }
+    }
+    
+    public void setOrganizerType(String organizerType) {
+        if (organizerType == null || organizerType.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.EVENT_INVALID_ORGANIZER);
+        }
+        try {
+            OrganizerType.valueOf(organizerType);
+        } catch (IllegalArgumentException e) {
             throw new BusinessException(ErrorCode.EVENT_INVALID_ORGANIZER);
         }
         this.organizerType = organizerType;

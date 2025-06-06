@@ -15,7 +15,7 @@ public class Event {
     }
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "varchar(255)")
     private String id;
 
     @Column(name = "title", nullable = false, length = 255)
@@ -30,8 +30,9 @@ public class Event {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(name = "location", nullable = false, length = 255)
-    private String location;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location", nullable = false, columnDefinition = "bigint")
+    private Location location;
 
     @Column(name = "address", nullable = false, length = 255)
     private String address;
@@ -39,14 +40,16 @@ public class Event {
     @Column(name = "creator_id", nullable = false)
     private String creatorId;
 
-    @ElementCollection
-    @CollectionTable(name = "event_participants", joinColumns = @JoinColumn(name = "event_id"))
-    @Column(name = "username")
-    private Set<String> participants = new HashSet<>();
-
     @Enumerated(EnumType.STRING)
     @Column(name = "organizer_type", nullable = false)
     private OrganizerType organizerType;
+
+    /**
+     * The set of registrations for this event.
+     * Each registration links a user to this event.
+     */
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventRegistration> registrations = new HashSet<>();
 
     public Event() {
         // Default constructor required by JPA
@@ -64,7 +67,6 @@ public class Event {
         event.description = dto.getDescription();
         event.startTime = dto.getStartTime();
         event.endTime = dto.getEndTime();
-        event.location = dto.getLocation();
         event.address = dto.getAddress();
         event.creatorId = dto.getCreatorId();
         event.organizerType = dto.getOrganizerType();
@@ -80,7 +82,6 @@ public class Event {
         this.description = dto.getDescription();
         this.startTime = dto.getStartTime();
         this.endTime = dto.getEndTime();
-        this.location = dto.getLocation();
         this.address = dto.getAddress();
         this.creatorId = dto.getCreatorId();
         this.organizerType = dto.getOrganizerType();
@@ -92,11 +93,15 @@ public class Event {
     public String getDescription() { return description; }
     public LocalDateTime getStartTime() { return startTime; }
     public LocalDateTime getEndTime() { return endTime; }
-    public String getLocation() { return location; }
+    public Location getLocation() { return location; }
+    public Long getLocationId() { return location != null ? location.getId() : null; }
     public String getAddress() { return address; }
     public String getCreatorId() { return creatorId; }
-    public Set<String> getParticipants() { return participants; }
     public OrganizerType getOrganizerType() { return organizerType; }
+    public Set<EventRegistration> getRegistrations() { return registrations; }
+
+    // Setters
+    public void setLocation(Location location) { this.location = location; }
 
     @Override
     public String toString() {
@@ -106,10 +111,10 @@ public class Event {
                 ", description='" + description + '\'' +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", location='" + location + '\'' +
+                ", locationId=" + (location != null ? location.getId() : "null") +
                 ", address='" + address + '\'' +
                 ", creatorId='" + creatorId + '\'' +
-                ", participants=" + participants +
+                ", registrations=" + registrations +
                 ", organizerType=" + organizerType +
                 '}';
     }
