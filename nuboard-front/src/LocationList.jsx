@@ -8,7 +8,7 @@ function LocationList(){
     function fetchLocations() {
         axios.get('http://localhost:8080/api/locations')
             .then((response) => {
-                if (response.data.code !== 0){
+                if (response.data.code === 0){
                     setLocations(response.data.data);
                 }
                 else {

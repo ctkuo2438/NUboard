@@ -9,7 +9,7 @@ function UserList(){
     function fetchUsers() {
         axios.get('http://localhost:8080/api/users')
             .then((response) => {
-                if (response.data.code !== 0){
+                if (response.data.code === 0){
                     setUsers(response.data.data);
                 }
                 else {
