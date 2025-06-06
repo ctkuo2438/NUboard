@@ -9,11 +9,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.neu.nuboard.dto.UserCreateDTO;
-import com.neu.nuboard.model.User;
-import com.neu.nuboard.service.UserService;
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
 import com.neu.nuboard.exception.SuccessResponse;
+import com.neu.nuboard.model.User;
+import com.neu.nuboard.service.UserService;
 
 @CrossOrigin(origins = "http://localhost:5173/")
 @RestController
@@ -132,12 +132,12 @@ public class UserController {
      */
     private UserCreateDTO convertUserToDTO(User user) {
         UserCreateDTO dto = new UserCreateDTO();
-        dto.setId(user.getId().toString());
+        dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setProgram(user.getProgram());
-        dto.setLocation(user.getLocation());
-        dto.setCollege(user.getCollege());
+        dto.setLocationId(user.getLocation() != null ? user.getLocation().getId() : null);
+        dto.setCollegeId(user.getCollege() != null ? user.getCollege().getId() : null);
         dto.setLocationName(user.getLocation() != null ? user.getLocation().getName() : null);
         dto.setCollegeName(user.getCollege() != null ? user.getCollege().getName() : null);
         dto.setEventsCount(user.getRegistrations() != null ? user.getRegistrations().size() : 0);

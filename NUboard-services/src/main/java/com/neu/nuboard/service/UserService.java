@@ -4,22 +4,30 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.neu.nuboard.utils.UUIDutil;
+
 import com.neu.nuboard.dto.UserCreateDTO;
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
-import com.neu.nuboard.model.User;
-import com.neu.nuboard.model.Location;
 import com.neu.nuboard.model.College;
+import com.neu.nuboard.model.Location;
+import com.neu.nuboard.model.User;
+import com.neu.nuboard.repository.CollegeRepository;
+import com.neu.nuboard.repository.LocationRepository;
 import com.neu.nuboard.repository.UserRepository;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final CollegeRepository collegeRepository;
     
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, 
+                      LocationRepository locationRepository,
+                      CollegeRepository collegeRepository) {
         this.userRepository = userRepository;
+        this.locationRepository = locationRepository;
+        this.collegeRepository = collegeRepository;
     }
     
     /**
@@ -56,6 +64,12 @@ public class UserService {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }  
 
+        // 获取Location和College实体
+        Location location = locationRepository.findById(userDTO.getLocationId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_LOCATION_SELECTION));
+        College college = collegeRepository.findById(userDTO.getCollegeId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_PROGRAM));
+
         // 创建用户对象
         User user = new User(
             userDTO.getUsername(),
@@ -64,9 +78,8 @@ public class UserService {
         );
         
         // 设置location和college
-        // 允许同一个college下有多个不同program
-        user.setLocation(userDTO.getLocation());
-        user.setCollege(userDTO.getCollege());
+        user.setLocation(location);
+        user.setCollege(college);
         
         // 验证用户数据
         if (!validateUser(user)) {
@@ -99,11 +112,19 @@ public class UserService {
             userRepository.existsByEmail(userDTO.getEmail())) {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
+
+        // 获取Location和College实体
+        Location location = locationRepository.findById(userDTO.getLocationId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_LOCATION_SELECTION));
+        College college = collegeRepository.findById(userDTO.getCollegeId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_PROGRAM));
                 
         // 更新用户信息
         user.setUsername(userDTO.getUsername());
         user.setProgram(userDTO.getProgram());
         user.setEmail(userDTO.getEmail());
+        user.setLocation(location);
+        user.setCollege(college);
         
         // 验证用户数据
         if (!validateUser(user)) {
