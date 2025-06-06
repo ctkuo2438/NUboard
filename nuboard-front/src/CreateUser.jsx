@@ -11,6 +11,13 @@ function CreateUser(){
     });
 
     async function createUser(){
+        console.log('newUser:', newUser);
+        // 基本的数据验证
+        if (!newUser.username || !newUser.email || !newUser.program || !newUser.locationId || !newUser.collegeId) {
+            alert("请填写所有必填字段");
+            return;
+        }
+
         try {
             await axios.post('http://localhost:8080/api/users', {
                 username: newUser.username,
@@ -18,7 +25,12 @@ function CreateUser(){
                 program: newUser.program,
                 locationId: Number(newUser.locationId),
                 collegeId: Number(newUser.collegeId),
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
+            
 
             // Only saving after successful submission
             setNewUser({
@@ -50,31 +62,36 @@ function CreateUser(){
                 <input 
                     type="text"
                     placeholder='username'
-                    onChange={(e) => inputNewUser(e, "username")} 
+                    value={newUser.username}
+                    onChange={(e) => inputNewUser(e, "username")}
                 />
 
                 <input 
                     type="text"
                     placeholder='email'
-                    onChange={(e) => inputNewUser(e, "email")} 
+                    value={newUser.email}
+                    onChange={(e) => inputNewUser(e, "email")}
                 />
 
                 <input 
                     type="text"
                     placeholder='program'
-                    onChange={(e) => inputNewUser(e, "program")} 
+                    value={newUser.program}
+                    onChange={(e) => inputNewUser(e, "program")}
                 />
 
                 <input 
                     type="text"
                     placeholder='locationId'
-                    onChange={(e) => inputNewUser(e, "locationId")} 
+                    value={newUser.locationId}
+                    onChange={(e) => inputNewUser(e, "locationId")}
                 />
 
                 <input 
                     type="text"
                     placeholder='collegeId'
-                    onChange={(e) => inputNewUser(e, "collegeId")} 
+                    value={newUser.collegeId}
+                    onChange={(e) => inputNewUser(e, "collegeId")}
                 />
             </div>
             <button type="button" onClick={createUser}>Create User</button>

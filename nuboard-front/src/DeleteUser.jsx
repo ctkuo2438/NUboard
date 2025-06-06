@@ -5,7 +5,7 @@ function DeleteUser(){
     const [userId, setUserId] = useState();
 
     function deleteUser(id){
-        axios.delete(`http://localhost:8080/api/events/${id}`)
+        axios.delete(`http://localhost:8080/api/users/${id}`)
             .then(() => {
                 console.log("delete successfully");
             })
@@ -20,7 +20,7 @@ function DeleteUser(){
             <input 
                 type="text"
                 placeholder='userid want to delete'
-                onChange={() => setUserId(e.target.value)} 
+                onChange={e => setUserId(e.target.value)} 
             />
             <button type="button" onClick={()=> deleteUser(userId)}>Delete User</button>
         </div>

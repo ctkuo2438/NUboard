@@ -13,7 +13,7 @@ function UpdateUser(){
 
     async function updateUser(id){
         try {
-            await axios.put('http://localhost:8080/api/users/${id}', {
+            await axios.put(`http://localhost:8080/api/users/${id}`, {
                     username: editedUser.username,
                     email: editedUser.email,
                     program: editedUser.program,
@@ -24,7 +24,11 @@ function UpdateUser(){
                     console.log(response.data.message);
                 })
                 .catch(error => {
-                    console.error(response.data.message);
+                    if (error.response) {
+                        console.error(error.response.data.message);
+                    } else {
+                        console.error(error);
+                    }
                 });
 
             // Only saving after successful submission
@@ -56,7 +60,7 @@ function UpdateUser(){
                 <input 
                     type="text"
                     placeholder='user id'
-                    onChange={() => setTargetUser(e.target.value)} 
+                    onChange={e => setTargetUser(e.target.value)} 
                 />
 
                 <input 
@@ -74,7 +78,7 @@ function UpdateUser(){
                 <input 
                     type="text"
                     placeholder='program'
-                    onChange={(e) => inputEditedUser(e, "email")} 
+                    onChange={(e) => inputEditedUser(e, "program")} 
                 />
 
                 <input 

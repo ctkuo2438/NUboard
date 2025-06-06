@@ -12,9 +12,9 @@ function SearchUser(){
     const [userId, setUserId] = useState();
 
     function searchUser(id) {
-        axios.get('http://localhost:8080/api/users/${id}')
+        axios.get(`http://localhost:8080/api/users/${id}`)
             .then((response) => {
-                if (response.data.code !== 0){
+                if (response.data.code === 0){
                     setUser(response.data.data);
                 }
                 else {
@@ -41,7 +41,7 @@ function SearchUser(){
             <input 
                 type="text"
                 placeholder='userid want to search'
-                onChange={() => setUserId(e.target.value)} 
+                onChange={e => setUserId(e.target.value)} 
             />
             <button type="button" onClick={()=> searchUser(userId)}>Search User</button>
 
