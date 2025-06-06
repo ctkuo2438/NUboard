@@ -62,7 +62,7 @@ function CreateUser(){
                 <input 
                     type="text"
                     placeholder='program'
-                    onChange={(e) => inputNewUser(e, "email")} 
+                    onChange={(e) => inputNewUser(e, "program")} 
                 />
 
                 <input 
@@ -78,6 +78,7 @@ function CreateUser(){
                 />
             </div>
             <button type="button" onClick={createUser}>Create User</button>
+            {console.log("即将发送数据：", newUser)}
         </div>
     );
 }

@@ -64,7 +64,7 @@ function NUboard(){
 
   function fetchEvents() {
     axios.get('http://localhost:8080/api/events')
-      .then((response) => setEvents(response.data))
+      .then((response) => setEvents(response.data.data))
       .catch((error) => console.error("Failed to load events", error));
   }
 
