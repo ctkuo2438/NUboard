@@ -6,27 +6,42 @@ function CreateUser(){
         username: "",
         email: "",
         program: "",
-        locationId: "",
-        collegeId: "",
+        locationId: null,
+        collegeId: null,
     });
 
     async function createUser(){
         try {
-            await axios.post('http://localhost:8080/api/users', {
-                username: newUser.username,
-                email: newUser.email,
-                program: newUser.program,
-                locationId: Number(newUser.locationId),
-                collegeId: Number(newUser.collegeId),
-            });
+            await axios.post(
+                'http://localhost:8080/api/users',
+                {
+                    "username": "testuser2",
+                    "email": "12345@qq.com",
+                    "program": "testprogram",
+                    "locationId": 1,
+                    "collegeId": 1,
+
+                    /*
+                    username: newUser.username,
+                    email: newUser.email,
+                    program: newUser.program,
+                    locationId: Number(newUser.locationId),
+                    collegeId: Number(newUser.collegeId),*/
+                },
+                {
+                    headers: {
+                    'Content-Type': 'application/json'
+                    }
+                }
+            );
 
             // Only saving after successful submission
             setNewUser({
                 username: "",
                 email: "",
                 program: "",
-                locationId: "",
-                collegeId: "",
+                locationId: null,
+                collegeId: null,
             });
 
         }
