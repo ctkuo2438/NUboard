@@ -2,12 +2,16 @@ package com.neu.nuboard.service;
 
 import com.neu.nuboard.dto.EventCreateDTO;
 import com.neu.nuboard.dto.EventResponseDTO;
+import com.neu.nuboard.dto.EventRegistrationDTO;
 import com.neu.nuboard.exception.*;
 import com.neu.nuboard.model.Event;
+import com.neu.nuboard.model.Location;
 import com.neu.nuboard.repository.EventRepository;
+import com.neu.nuboard.repository.LocationRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * Service class for managing event-related business logic.
@@ -15,9 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final LocationRepository locationRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository) {
         this.eventRepository = eventRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -26,8 +32,13 @@ public class EventService {
      * @return EventResponseDTO containing the saved event details.
      */
     public EventResponseDTO createEvent(EventCreateDTO eventCreateDTO) {
+        // Find the location by ID
+        Location location = locationRepository.findById(eventCreateDTO.getLocationId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_INVALID_LOCATION));
+
         // Create event using factory method
         Event event = Event.fromDTO(eventCreateDTO);
+        event.setLocation(location);
 
         // Save the event to the database
         Event savedEvent = eventRepository.save(event);
@@ -72,8 +83,13 @@ public class EventService {
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
+        // Find the location by ID
+        Location location = locationRepository.findById(eventCreateDTO.getLocationId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_INVALID_LOCATION));
+
         // Update event using the update method
         existingEvent.updateFromDTO(eventCreateDTO);
+        existingEvent.setLocation(location);
 
         Event updatedEvent = eventRepository.save(existingEvent);
         return mapToResponseDTO(updatedEvent);
@@ -87,11 +103,7 @@ public class EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
-        // Clear participants before deleting the event
-        event.getParticipants().clear();
-        eventRepository.save(event);
-
-        // Now delete the event
+        // Delete the event directly
         eventRepository.deleteById(id);
     }
 
@@ -107,11 +119,21 @@ public class EventService {
         responseDTO.setDescription(event.getDescription());
         responseDTO.setStartTime(event.getStartTime());
         responseDTO.setEndTime(event.getEndTime());
-        responseDTO.setLocation(event.getLocation());
+        responseDTO.setLocationId(event.getLocationId());
         responseDTO.setAddress(event.getAddress());
         responseDTO.setCreatorId(event.getCreatorId());
-        responseDTO.setParticipants(event.getParticipants());
         responseDTO.setOrganizerType(event.getOrganizerType());
+
+        // Map registrations to DTOs
+        Set<EventRegistrationDTO> registrationDTOs = event.getRegistrations().stream()
+            .map(registration -> new EventRegistrationDTO(
+                registration.getId(),
+                registration.getEvent().getId(),
+                registration.getUser().getId().toString()
+            ))
+            .collect(Collectors.toSet());
+        responseDTO.setRegistrations(registrationDTOs);
+
         return responseDTO;
     }
 }

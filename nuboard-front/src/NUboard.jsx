@@ -6,12 +6,13 @@ function NUboard(){
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [registrationRecords, setRegistrationRecords] = useState([]);
     const [registeringUser, setRegisteringUser] = useState("");
+    const [isUpdating, setIsUpdating] = useState(false);
     const [newEvent, setNewEvent] = useState({
         title: "",
         description: "",
         startTime: "",
         endTime: "",
-        location: "",
+        locationId: "",
         address: "",
         creatorId:"",
         organizerType:"SCHOOL",
@@ -22,36 +23,25 @@ function NUboard(){
 
   async function saveEvent() {
     try {
-        /*
+
         await axios.post('http://localhost:8080/api/events', {
             title: newEvent.title,
             description: newEvent.description,
             startTime: newEvent.startTime,
             endTime: newEvent.endTime,
-            locationId: newEvent.location,
+            locationId: newEvent.locationId,
             address: newEvent.address,
             creatorId: newEvent.creatorId,
             organizerType: newEvent.organizerType,
-        });*/
-
-        await axios.post('http://localhost:8080/api/events', {
-            "title": "testTitle",
-            "description": "testdescription",
-            "startTime": "2024-03-20T 10:00:00",
-            "endTime": "2024-03-20T 12:00:00",
-            "locationId": 1,
-            "address": "testaddress",
-            "creatorId": "2c468402-72ed-4d62-a82e-ed3dcf661263",
-            "organizerType": "SCHOOL",
         });
-  
+
         // Only saving after successful submission
         setNewEvent({
           title: "",
           description: "",
           startTime: "",
           endTime: "",
-          location: "",
+          locationId: "",
           address: "",
           creatorId:"",
           organizerType:"SCHOOL",
@@ -65,6 +55,55 @@ function NUboard(){
         console.error("Failed to save event:", error);
         alert("Fail to save, please try again");
     }
+  }
+
+  //event updates
+  async function updateEvent(event) {
+    try {
+      // Get the current values from the form
+      const eventData = {
+        title: document.getElementById(`${id}-title`).value,
+        description: document.getElementById(`${id}-description`).value,
+        startTime: document.getElementById(`${id}-start-time`).value,
+        endTime: document.getElementById(`${id}-end-time`).value,
+        locationId: document.getElementById(`${id}-location-id`).value,
+        address: document.getElementById(`${id}-address`).value,
+        creatorId: document.getElementById(`${id}-creator-id`).value,
+        organizerType: "SCHOOL"  // Default value since we don't have this in the form
+      };
+
+      console.log("Sending update request with data:", eventData);
+      console.log("Event ID:", selectedEvent);
+
+      const response = await axios.put(`http://localhost:8080/api/events/${selectedEvent}`, eventData);
+      console.log("Event updated successfully:", response.data);
+      await fetchEvents();
+      creationRef.current.close();
+      setIsUpdating(false);
+      setSelectedEvent(null);
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+      }
+    }
+  }
+
+  // Add function to open update modal
+  function openUpdateModal(event) {
+    setIsUpdating(true);
+    setSelectedEvent(event.id);
+    creationRef.current.showModal();
+    // Set the form fields with existing event data after modal is opened
+    setTimeout(() => {
+      document.getElementById(`${id}-title`).value = event.title;
+      document.getElementById(`${id}-description`).value = event.description;
+      document.getElementById(`${id}-location-id`).value = event.locationId;
+      document.getElementById(`${id}-address`).value = event.address;
+      document.getElementById(`${id}-creator-id`).value = event.creatorId;
+      document.getElementById(`${id}-start-time`).value = event.startTime;
+      document.getElementById(`${id}-end-time`).value = event.endTime;
+    }, 0);
   }
 
   function inputNewEvent(e, field){
@@ -125,10 +164,33 @@ function NUboard(){
     fetchEvents();
   }, [])
 
+  async function handleSave() {
+    if (isUpdating) {
+      await updateEvent(newEvent);
+    } else {
+      await saveEvent();
+    }
+  }
+
+  function clearForm() {
+    document.getElementById(`${id}-title`).value = "";
+    document.getElementById(`${id}-description`).value = "";
+    document.getElementById(`${id}-location-id`).value = "";
+    document.getElementById(`${id}-address`).value = "";
+    document.getElementById(`${id}-creator-id`).value = "";
+    document.getElementById(`${id}-start-time`).value = "";
+    document.getElementById(`${id}-end-time`).value = "";
+  }
+
     return (
     <>
       <div className='form'>
-        <button type="button" onClick={() => creationRef.current.showModal()} className='create-button'>Create Event</button>
+        <button type="button" onClick={() => {
+          setIsUpdating(false);
+          setSelectedEvent(null);
+          clearForm();
+          creationRef.current.showModal();
+        }} className='create-button'>Create Event</button>
         <dialog ref={creationRef}>
           <div>
             <label htmlFor={`${id}-title`}>Title: </label>
@@ -141,13 +203,13 @@ function NUboard(){
           </div>
 
           <div>
-            <label htmlFor={`${id}-location`}>Location: </label>
-            <input type="text" id={`${id}-location`} onChange={(e) => inputNewEvent(e, "location")}/>
+            <label htmlFor={`${id}-location-id`}>Location ID: </label>
+            <input type="text" id={`${id}-location-id`} onChange={(e) => inputNewEvent(e, "locationId")}/>
           </div>
 
           <div>
-            <label htmlFor={`${id}-location`}>Address: </label>
-            <input type="text" id={`${id}-location`} onChange={(e) => inputNewEvent(e, "address")}/>
+            <label htmlFor={`${id}-address`}>Address: </label>
+            <input type="text" id={`${id}-address`} onChange={(e) => inputNewEvent(e, "address")}/>
           </div>
 
           <div>
@@ -175,11 +237,14 @@ function NUboard(){
             />
           </div>
 
-          <button type="button" onClick={saveEvent}>
-            Save
+          <button type="button" onClick={handleSave}>
+            {isUpdating ? 'Update' : 'Save'}
           </button>
 
-          <button type="button" onClick={() => creationRef.current.close()}>
+          <button type="button" onClick={() => {
+            setIsUpdating(false);
+            creationRef.current.close();
+          }}>
             Close
           </button>
         </dialog>
@@ -200,13 +265,14 @@ function NUboard(){
             <p>{event.description}</p>
             <p>{event.startTime}</p>
             <p>{event.endTime}</p>
-            <p>{event.location}</p>
+            <p>{event.locationId}</p>
             <p>{event.address}</p>
             <p>{event.creatorId}</p>
             <p>{event.organizerType}</p>
 
             <div>
               <button type="button" onClick={() => openRegistrationModal(event)}>Register</button>
+              <button type="button" onClick={() => openUpdateModal(event)}>Update</button>
               <button type="button" onClick={() => deleteEvents(event.id)}>Delete</button>
             </div>
 
@@ -230,7 +296,7 @@ function NUboard(){
             onChange={(e) => setRegisteringUser(e.target.value)} 
             value={registeringUser}
             />
-          <button type="button" onClick={(e) => register(registeringUser, selectedEvent.id)}>
+          <button type="button" onClick={() => register(registeringUser, selectedEvent.id)}>
             Register
           </button>
 
@@ -245,4 +311,3 @@ function NUboard(){
 }
 
 export default NUboard;
-

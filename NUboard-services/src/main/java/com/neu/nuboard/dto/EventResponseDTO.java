@@ -1,5 +1,6 @@
 package com.neu.nuboard.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.neu.nuboard.model.Event.OrganizerType;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -12,13 +13,17 @@ public class EventResponseDTO {
     private String id;
     private String title;
     private String description;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startTime;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endTime;
-    private String location;
+    private Long locationId;
     private String address;
     private String creatorId;
-    private Set<String> participants;
     private OrganizerType organizerType;
+    private Set<EventRegistrationDTO> registrations;
 
     /**
      * Get the ID of the event.
@@ -56,11 +61,11 @@ public class EventResponseDTO {
     public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 
     /**
-     * Get the location of the event.
-     * @return The location of the event.
+     * Get the location ID of the event.
+     * @return The location ID of the event.
      */
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public Long getLocationId() { return locationId; }
+    public void setLocationId(Long locationId) { this.locationId = locationId; }
 
     /**
      * Get the address of the event.
@@ -77,16 +82,16 @@ public class EventResponseDTO {
     public void setCreatorId(String creatorId) { this.creatorId = creatorId; }
 
     /**
-     * Get the participants of the event.
-     * @return The set of participant usernames.
-     */
-    public Set<String> getParticipants() { return participants; }
-    public void setParticipants(Set<String> participants) { this.participants = participants; }
-
-    /**
      * Get the organizer type of the event.
      * @return The organizer type of the event.
      */
     public OrganizerType getOrganizerType() { return organizerType; }
     public void setOrganizerType(OrganizerType organizerType) { this.organizerType = organizerType; }
+
+    /**
+     * Get the registrations for this event.
+     * @return The set of registrations.
+     */
+    public Set<EventRegistrationDTO> getRegistrations() { return registrations; }
+    public void setRegistrations(Set<EventRegistrationDTO> registrations) { this.registrations = registrations; }
 }
