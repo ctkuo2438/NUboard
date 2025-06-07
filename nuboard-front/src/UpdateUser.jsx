@@ -60,36 +60,42 @@ function UpdateUser(){
                 <input 
                     type="text"
                     placeholder='user id'
+                    value={targetUser}
                     onChange={e => setTargetUser(e.target.value)} 
                 />
 
                 <input 
                     type="text"
                     placeholder='username'
+                    value={editedUser.username}
                     onChange={(e) => inputEditedUser(e, "username")} 
                 />
 
                 <input 
                     type="text"
                     placeholder='email'
+                    value={editedUser.email}
                     onChange={(e) => inputEditedUser(e, "email")} 
                 />
 
                 <input 
                     type="text"
                     placeholder='program'
+                    value={editedUser.program}
                     onChange={(e) => inputEditedUser(e, "program")} 
                 />
 
                 <input 
                     type="text"
                     placeholder='locationId'
+                    value={editedUser.locationId}
                     onChange={(e) => inputEditedUser(e, "locationId")} 
                 />
 
                 <input 
                     type="text"
                     placeholder='collegeId'
+                    value={editedUser.collegeId}
                     onChange={(e) => inputEditedUser(e, "collegeId")} 
                 />
             </div>
