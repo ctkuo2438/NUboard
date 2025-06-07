@@ -131,26 +131,27 @@ function NUboard(){
   }
 
   function openRegistrationModal(event) {
+    console.log("EVENT passed to modal:", event);
     setSelectedEvent(event);
     setRegistrationRecords([]);
     registrationRef.current.showModal();
   
-    axios.get(`http://localhost:8080/api/registrations/${event.id}`)
+    axios.get(`http://localhost:8080/api/registrations/event/${event.id}`)
       .then((response) => {
-        setRegistrationRecords(response.data);
+        setRegistrationRecords(response.data.data);
       })
       .catch((error) => console.error("Failed to load registration records", error));
   }
 
   function register(userId, eventId){
-    axios.post('http://localhost:8080/api/registrations', null, {
+    axios.post('http://localhost:8080/api/registrations/register', null, {
       params: {
         userId: userId,
         eventId: eventId
       }
     })
     .then(response => {
-      alert(response.data);
+      alert(response.data.data);
       openRegistrationModal(selectedEvent);
       setRegisteringUser("");
     })
@@ -285,7 +286,7 @@ function NUboard(){
             <p>No Records For Now</p>
             ) : (
             registrationRecords.map((record) => (
-              <p>{record.user.id}</p>
+              <p>{record.userId}</p>
             ))
           )}
 
