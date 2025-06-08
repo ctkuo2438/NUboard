@@ -2,26 +2,28 @@ package com.neu.nuboard.service;
 
 import com.neu.nuboard.dto.EventCreateDTO;
 import com.neu.nuboard.dto.EventResponseDTO;
+import com.neu.nuboard.dto.EventRegistrationDTO;
 import com.neu.nuboard.exception.*;
 import com.neu.nuboard.model.Event;
-import com.neu.nuboard.model.User;
+import com.neu.nuboard.model.Location;
 import com.neu.nuboard.repository.EventRepository;
+import com.neu.nuboard.repository.LocationRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * Service class for managing event-related business logic.
  */
 @Service
 public class EventService {
-    // eventRepository is an object that implements the EventRepository interface for CRUD operations on the event table.
     private final EventRepository eventRepository;
+    private final LocationRepository locationRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, LocationRepository locationRepository) {
         this.eventRepository = eventRepository;
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -30,31 +32,13 @@ public class EventService {
      * @return EventResponseDTO containing the saved event details.
      */
     public EventResponseDTO createEvent(EventCreateDTO eventCreateDTO) {
-        // Validate input
-        if (eventCreateDTO.getTitle() == null || eventCreateDTO.getTitle().trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.UNKNOWN_ERROR);
-        }
-        if (eventCreateDTO.getEventDate() == null) {
-            throw new IllegalArgumentException("Event date cannot be null");
-        }
-        if (eventCreateDTO.getLocation() == null || eventCreateDTO.getLocation().trim().isEmpty()) {
-            throw new IllegalArgumentException("Event location cannot be null or empty");
-        }
-        if (eventCreateDTO.getCreatorId() == null || eventCreateDTO.getCreatorId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Creator ID cannot be null or empty");
-        }
+        // Find the location by ID
+        Location location = locationRepository.findById(eventCreateDTO.getLocationId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_INVALID_LOCATION));
 
-        // Map EventCreateDTO to Event entity
-        User creator = new User("temp-user"); // temporary username
-        creator.setId(eventCreateDTO.getCreatorId());
-        Event event = new Event(
-                eventCreateDTO.getTitle(),
-                eventCreateDTO.getDescription(),
-                eventCreateDTO.getEventDate(),
-                eventCreateDTO.getLocation(),
-                creator,
-                new HashSet<>()
-        );
+        // Create event using factory method
+        Event event = Event.fromDTO(eventCreateDTO);
+        event.setLocation(location);
 
         // Save the event to the database
         Event savedEvent = eventRepository.save(event);
@@ -75,21 +59,52 @@ public class EventService {
     }
 
     /**
-     * Registers a user for an event.
-     * @param eventId The ID of the event.
-     * @param userId The ID of the user to register.
+     * Searches events by keyword in title or description.
+     * @param keyword The search keyword.
+     * @return List of EventResponseDTO containing matching events.
      */
-    public void registerForEvent(String eventId, String userId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + eventId));
+    public List<EventResponseDTO> searchEvents(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.EVENT_INVALID_TITLE);
+        }
+        return eventRepository.searchEvents(keyword.trim())
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
 
-        // Create a User object for the participant
-        User participant = new User("temp-user"); // temporary username
-        participant.setId(userId);
+    /**
+     * Updates an existing event.
+     * @param id The ID of the event to update.
+     * @param eventCreateDTO The DTO containing updated event details.
+     * @return EventResponseDTO containing the updated event details.
+     */
+    public EventResponseDTO updateEvent(String id, EventCreateDTO eventCreateDTO) {
+        Event existingEvent = eventRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
-        // Add participant to the event
-        event.getParticipants().add(participant);
-        eventRepository.save(event);
+        // Find the location by ID
+        Location location = locationRepository.findById(eventCreateDTO.getLocationId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_INVALID_LOCATION));
+
+        // Update event using the update method
+        existingEvent.updateFromDTO(eventCreateDTO);
+        existingEvent.setLocation(location);
+
+        Event updatedEvent = eventRepository.save(existingEvent);
+        return mapToResponseDTO(updatedEvent);
+    }
+
+    /**
+     * Deletes an event.
+     * @param id The ID of the event to delete.
+     */
+    public void deleteEvent(String id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
+
+        // Delete the event directly
+        eventRepository.deleteById(id);
     }
 
     /**
@@ -102,14 +117,23 @@ public class EventService {
         responseDTO.setId(event.getId());
         responseDTO.setTitle(event.getTitle());
         responseDTO.setDescription(event.getDescription());
-        responseDTO.setEventDate(event.getEventDate());
-        responseDTO.setLocation(event.getLocation());
-        responseDTO.setCreatorId(event.getCreator().getId());
-        responseDTO.setParticipants(
-                event.getParticipants().stream()
-                        .map(User::getId)
-                        .collect(Collectors.toSet())
-        );
+        responseDTO.setStartTime(event.getStartTime());
+        responseDTO.setEndTime(event.getEndTime());
+        responseDTO.setLocationId(event.getLocationId());
+        responseDTO.setAddress(event.getAddress());
+        responseDTO.setCreatorId(event.getCreatorId());
+        responseDTO.setOrganizerType(event.getOrganizerType());
+
+        // Map registrations to DTOs
+        Set<EventRegistrationDTO> registrationDTOs = event.getRegistrations().stream()
+            .map(registration -> new EventRegistrationDTO(
+                registration.getId(),
+                registration.getEvent().getId(),
+                registration.getUser().getId().toString()
+            ))
+            .collect(Collectors.toSet());
+        responseDTO.setRegistrations(registrationDTOs);
+
         return responseDTO;
     }
 }

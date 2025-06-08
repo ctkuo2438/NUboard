@@ -1,9 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/newboard
+    url: jdbc:postgresql://localhost:5432/nuboard
+
     username: postgres
-    password:
+    password: 
     driver-class-name: org.postgresql.Driver
+
+  sql:
+    init:
+      mode: always     # ✅ 替代旧版 initialization-mode
+      platform: postgres # ✅ 确保识别 PostgreSQL（可选）
+
   jpa:
     hibernate:
       ddl-auto: update # auto update db

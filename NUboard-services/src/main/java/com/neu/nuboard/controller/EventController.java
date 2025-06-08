@@ -2,27 +2,25 @@ package com.neu.nuboard.controller;
 
 import com.neu.nuboard.dto.EventCreateDTO;
 import com.neu.nuboard.dto.EventResponseDTO;
+import com.neu.nuboard.exception.SuccessResponse;
 import com.neu.nuboard.service.EventService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 /**
- * REST controller for handling event-related API requests.
+ * REST controller for managing events.
  */
+@CrossOrigin(origins = "http://localhost:5173/")
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-
     private final EventService eventService;
 
-    /**
-     * Constructor for dependency injection.
-     * @param eventService The EventService to handle business logic.
-     */
+    @Autowired
     public EventController(EventService eventService) {
         this.eventService = eventService;
     }
@@ -30,33 +28,58 @@ public class EventController {
     /**
      * Creates a new event.
      * @param eventCreateDTO The DTO containing event details.
-     * @return ResponseEntity containing the created event details.
+     * @return The created event details wrapped in SuccessResponse.
      */
     @PostMapping
-    public ResponseEntity<EventResponseDTO> createEvent(@Valid @RequestBody EventCreateDTO eventCreateDTO) {
+    public ResponseEntity<SuccessResponse<EventResponseDTO>> createEvent(@Valid @RequestBody EventCreateDTO eventCreateDTO) {
         EventResponseDTO responseDTO = eventService.createEvent(eventCreateDTO);
-        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(new SuccessResponse<>(responseDTO), HttpStatus.CREATED);
     }
 
     /**
      * Retrieves all events.
-     * @return ResponseEntity containing a list of all event details.
+     * @return List of all events wrapped in SuccessResponse.
      */
     @GetMapping
-    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+    public ResponseEntity<SuccessResponse<List<EventResponseDTO>>> getAllEvents() {
         List<EventResponseDTO> events = eventService.getAllEvents();
-        return new ResponseEntity<>(events, HttpStatus.OK);
+        return ResponseEntity.ok(new SuccessResponse<>(events));
     }
 
     /**
-     * Registers a user for an event.
-     * @param id The ID of the event.
-     * @param userId The ID of the user to register.
-     * @return ResponseEntity indicating success.
+     * Searches events by keyword.
+     * @param keyword The search keyword.
+     * @return List of matching events wrapped in SuccessResponse.
      */
-    @PostMapping("/{id}/register")
-    public ResponseEntity<Void> registerForEvent(@PathVariable String id, @RequestBody String userId) {
-        eventService.registerForEvent(id, userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<SuccessResponse<List<EventResponseDTO>>> searchEvents(@RequestParam String keyword) {
+        List<EventResponseDTO> events = eventService.searchEvents(keyword);
+        return ResponseEntity.ok(new SuccessResponse<>(events));
     }
+
+    /**
+     * Updates an existing event.
+     * @param id The ID of the event to update.
+     * @param eventCreateDTO The DTO containing updated event details.
+     * @return The updated event details wrapped in SuccessResponse.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<SuccessResponse<EventResponseDTO>> updateEvent(
+            @PathVariable String id,
+            @Valid @RequestBody EventCreateDTO eventCreateDTO) {
+        EventResponseDTO updatedEvent = eventService.updateEvent(id, eventCreateDTO);
+        return ResponseEntity.ok(new SuccessResponse<>(updatedEvent));
+    }
+
+    /**
+     * Deletes an event.
+     * @param id The ID of the event to delete.
+     * @return SuccessResponse with no data.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<SuccessResponse<Void>> deleteEvent(@PathVariable String id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok(new SuccessResponse<>());
+    }
+
 }
