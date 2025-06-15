@@ -141,7 +141,7 @@ public class UserController {
      */
     private UserCreateDTO convertUserToDTO(User user) {
         UserCreateDTO dto = new UserCreateDTO();
-        dto.setId(user.getId());
+        dto.setId(user.getId());// 实体改成Long后转为String
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setProgram(user.getProgram());
