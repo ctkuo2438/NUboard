@@ -25,19 +25,8 @@ server:
 # 分布式ID生成器配置
 id:
   generator:
-    # 基础配置
-    worker-id: 1                # 机器ID，范围：0-31
-    datacenter-id: 0            # 数据中心ID，范围：0-7
-    
-    # 时间戳配置
-    epoch: 1735689600000      # 起始时间戳：2025-01-01
-    
-    # 位数配置
-    worker-id-bits: 5           # 机器ID位数，支持32台服务器
-    datacenter-id-bits: 3       # 数据中心ID位数，支持8个数据中心
-    sequence-bits: 12           # 序列号位数，每毫秒支持4096个序列
-    
-
+    worker-id: 1               
+    datacenter-id: 0           
 logging:
   level:
     org.hibernate.SQL: DEBUG
