@@ -5,17 +5,15 @@ import java.util.Set;
 
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
-import com.neu.nuboard.utils.UUIDutil;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -25,7 +23,7 @@ public class User {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    private String id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
@@ -48,7 +46,6 @@ public class User {
      * JPA要求的默认无参构造函数。
      */
     protected User() {
-        this.id = UUIDutil.getId();
     }
 
     /**
@@ -58,15 +55,15 @@ public class User {
      * @param program 用户所学专业。
      * @param email 用户邮箱。
      */
-    public User(String username, String program, String email) {
-        this.id = UUIDutil.getId();
+    public User(Long id, String username, String program, String email) {
+        this.id = id;
         this.setUsername(username);
         this.setProgram(program);
         this.setEmail(email);
     }
     
     // Getters
-    public String getId() { return id; }
+    public Long getId() { return id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) {
