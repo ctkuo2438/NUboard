@@ -13,7 +13,7 @@ import java.util.List;
  * REST controller for handling HTTP requests related to event registrations.
  * Base path: /api/registrations
  */
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/registrations")
 public class EventRegistrationController {
