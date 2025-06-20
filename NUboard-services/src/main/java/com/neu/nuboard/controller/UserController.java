@@ -141,7 +141,7 @@ public class UserController {
      */
     private UserCreateDTO convertUserToDTO(User user) {
         UserCreateDTO dto = new UserCreateDTO();
-        dto.setId(user.getId());
+        dto.setId(String.valueOf(user.getId()));
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setProgram(user.getProgram());

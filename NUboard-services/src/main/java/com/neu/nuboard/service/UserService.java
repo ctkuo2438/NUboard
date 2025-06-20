@@ -14,20 +14,24 @@ import com.neu.nuboard.model.User;
 import com.neu.nuboard.repository.CollegeRepository;
 import com.neu.nuboard.repository.LocationRepository;
 import com.neu.nuboard.repository.UserRepository;
+import com.neu.nuboard.utils.SnowflakeIDGenerator;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final CollegeRepository collegeRepository;
+    private final SnowflakeIDGenerator snowflakeIdGenerator;
     
     @Autowired
     public UserService(UserRepository userRepository, 
                       LocationRepository locationRepository,
-                      CollegeRepository collegeRepository) {
+                      CollegeRepository collegeRepository,
+                      SnowflakeIDGenerator snowflakeIdGenerator) {
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
         this.collegeRepository = collegeRepository;
+        this.snowflakeIdGenerator = snowflakeIdGenerator;
     }
     
     /**
@@ -50,7 +54,7 @@ public class UserService {
      * @throws BusinessException 如果用户不存在
      */
     public User getUserById(String id) {
-        return userRepository.findById(id)
+        return userRepository.findById(Long.valueOf(id))
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -72,6 +76,7 @@ public class UserService {
 
         // 创建用户对象
         User user = new User(
+            snowflakeIdGenerator.nextId(),
             userDTO.getUsername(),
             userDTO.getProgram(),
             userDTO.getEmail()
@@ -98,7 +103,7 @@ public class UserService {
      */
     public User updateUser(String id, UserCreateDTO userDTO) {
         // 查找要更新的用户
-        User user = userRepository.findById(id)
+        User user = userRepository.findById(Long.valueOf(id))
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
         // 如果用户名变更了，检查是否已存在
@@ -141,12 +146,12 @@ public class UserService {
      */
     public void deleteUser(String id) {
         // 检查用户是否存在
-        if (!userRepository.existsById(id)) {
+        if (!userRepository.existsById(Long.valueOf(id))) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         
         // 删除用户
-        userRepository.deleteById(id);
+        userRepository.deleteById(Long.valueOf(id));
     }
     
     /**
