@@ -4,7 +4,7 @@ public class EventRegistrationDTO {
 
     private Long id;
     private String eventId;
-    private String userId;
+    private Long userId;
 
     /**
      * Default constructor.
@@ -19,7 +19,7 @@ public class EventRegistrationDTO {
      * @param eventId The ID of the event.
      * @param userId The ID of the user.
      */
-    public EventRegistrationDTO(Long id, String eventId, String userId) {
+    public EventRegistrationDTO(Long id, String eventId, Long userId) {
         this.id = id;
         this.eventId = eventId;
         this.userId = userId;
@@ -43,6 +43,6 @@ public class EventRegistrationDTO {
      * Get the ID of the user.
      * @return The ID of the user.
      */
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 }

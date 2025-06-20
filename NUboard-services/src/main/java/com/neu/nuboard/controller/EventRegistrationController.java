@@ -40,7 +40,7 @@ public class EventRegistrationController {
     @PostMapping("/register")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> registerForEvent(
             @RequestParam("eventId") String eventId,
-            @RequestParam("userId") String userId) {
+            @RequestParam("userId") Long userId) {
         registrationService.registerForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(null, eventId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(responseDTO));
@@ -57,7 +57,7 @@ public class EventRegistrationController {
     @DeleteMapping("/unregister")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> unregisterForEvent(
             @RequestParam("eventId") String eventId,
-            @RequestParam("userId") String userId) {
+            @RequestParam("userId") Long userId) {
         registrationService.unregisterForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(null, eventId, userId);
         return ResponseEntity.ok(new SuccessResponse<>(responseDTO));
@@ -82,7 +82,7 @@ public class EventRegistrationController {
      * @return a ResponseEntity containing a {@link SuccessResponse} with a list of registrations for the specified user and HTTP status 200 (OK)
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByUserId(@PathVariable String userId) {
+    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByUserId(@PathVariable Long userId) {
         List<EventRegistrationDTO> registrations = registrationService.getRegistrationsByUserId(userId);
         return ResponseEntity.ok(new SuccessResponse<>(registrations));
     }

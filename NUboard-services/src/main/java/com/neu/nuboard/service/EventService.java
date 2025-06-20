@@ -129,7 +129,7 @@ public class EventService {
             .map(registration -> new EventRegistrationDTO(
                 registration.getId(),
                 registration.getEvent().getId(),
-                registration.getUser().getId().toString()
+                registration.getUser().getId()
             ))
             .collect(Collectors.toSet());
         responseDTO.setRegistrations(registrationDTOs);

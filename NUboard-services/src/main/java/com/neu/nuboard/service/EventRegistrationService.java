@@ -9,11 +9,13 @@ import com.neu.nuboard.repository.EventRepository;
 import com.neu.nuboard.repository.UserRepository;
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.neu.nuboard.utils.SnowflakeIDGenerator;
 
 /**
  * Service class for managing event registration-related business logic.
@@ -25,6 +27,7 @@ public class EventRegistrationService {
     private final EventRegistrationRepository registrationRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final SnowflakeIDGenerator snowflakeIDGenerator;
 
     /**
      * Constructs an EventRegistrationService with the specified repositories.
@@ -32,13 +35,17 @@ public class EventRegistrationService {
      * @param registrationRepository the repository for event registration persistence operations
      * @param eventRepository the repository for event persistence operations
      * @param userRepository the repository for user persistence operations
+     * @param snowflakeIDGenerator the generator for unique Long IDs
      */
+    @Autowired
     public EventRegistrationService(EventRegistrationRepository registrationRepository,
                                     EventRepository eventRepository,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository,
+                                    SnowflakeIDGenerator snowflakeIDGenerator) {
         this.registrationRepository = registrationRepository;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.snowflakeIDGenerator = snowflakeIDGenerator;
     }
 
     /**
@@ -48,12 +55,12 @@ public class EventRegistrationService {
      * @param userId the ID of the user to register
      * @throws BusinessException if the event or user is not found, the input is invalid, or the user is already registered
      */
-    public void registerForEvent(String eventId, String userId) {
+    public void registerForEvent(String eventId, Long userId) {
         // Validate input
         if (eventId == null || eventId.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
-        if (userId == null || userId.trim().isEmpty()) {
+        if (userId == null) {
             throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
 
@@ -68,7 +75,7 @@ public class EventRegistrationService {
             throw new BusinessException(ErrorCode.ALREADY_REGISTERED);
         }
 
-        // Create and save the registration
+        // Create and save the registration with Snowflake ID
         EventRegistration registration = new EventRegistration(event, user);
         try {
             registrationRepository.save(registration);
@@ -84,12 +91,12 @@ public class EventRegistrationService {
      * @param userId the ID of the user to unregister
      * @throws BusinessException if the input is invalid or the registration is not found
      */
-    public void unregisterForEvent(String eventId, String userId) {
+    public void unregisterForEvent(String eventId, Long userId) {
         // Validate input
         if (eventId == null || eventId.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
-        if (userId == null || userId.trim().isEmpty()) {
+        if (userId == null) {
             throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
 
@@ -125,8 +132,8 @@ public class EventRegistrationService {
      * @return a list of {@link EventRegistrationDTO} containing the registration details
      * @throws BusinessException if the user ID is invalid
      */
-    public List<EventRegistrationDTO> getRegistrationsByUserId(String userId) {
-        if (userId == null || userId.trim().isEmpty()) {
+    public List<EventRegistrationDTO> getRegistrationsByUserId(Long userId) {
+        if (userId == null) {
             throw new BusinessException(ErrorCode.VALIDATION_ERROR);
         }
         return registrationRepository.findByUserId(userId)
@@ -157,7 +164,7 @@ public class EventRegistrationService {
         return new EventRegistrationDTO(
                 registration.getId(),
                 registration.getEvent().getId(),
-                registration.getUser().getId().toString()
+                registration.getUser().getId()
         );
     }
 }
