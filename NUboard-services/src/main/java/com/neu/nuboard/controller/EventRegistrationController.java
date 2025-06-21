@@ -2,6 +2,7 @@ package com.neu.nuboard.controller;
 
 import com.neu.nuboard.dto.EventRegistrationDTO;
 import com.neu.nuboard.exception.SuccessResponse;
+import com.neu.nuboard.model.EventRegistration;
 import com.neu.nuboard.service.EventRegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,14 +36,18 @@ public class EventRegistrationController {
      * @param eventId the ID of the event to register for
      * @param userId the ID of the user to register
      * @return a ResponseEntity containing a {@link SuccessResponse} with an {@link EventRegistrationDTO}
-     *         containing the event ID and user ID, and HTTP status 201 (Created)
+     * containing the event ID and user ID, and HTTP status 201 (Created)
      */
     @PostMapping("/register")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> registerForEvent(
             @RequestParam("eventId") String eventId,
-            @RequestParam("userId") String userId) {
-        registrationService.registerForEvent(eventId, userId);
-        EventRegistrationDTO responseDTO = new EventRegistrationDTO(null, eventId, userId);
+            @RequestParam("userId") Long userId) {
+        EventRegistration registration = registrationService.registerForEvent(eventId, userId);
+        EventRegistrationDTO responseDTO = new EventRegistrationDTO(
+                registration.getId(),
+                eventId,
+                userId
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(responseDTO));
     }
 
@@ -52,14 +57,18 @@ public class EventRegistrationController {
      * @param eventId the ID of the event to unregister from
      * @param userId the ID of the user to unregister
      * @return a ResponseEntity containing a {@link SuccessResponse} with an {@link EventRegistrationDTO}
-     *         containing the event ID and user ID, and HTTP status 200 (OK)
+     * containing the event ID and user ID, and HTTP status 200 (OK)
      */
     @DeleteMapping("/unregister")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> unregisterForEvent(
             @RequestParam("eventId") String eventId,
-            @RequestParam("userId") String userId) {
-        registrationService.unregisterForEvent(eventId, userId);
-        EventRegistrationDTO responseDTO = new EventRegistrationDTO(null, eventId, userId);
+            @RequestParam("userId") Long userId) {
+        EventRegistration registration = registrationService.unregisterForEvent(eventId, userId);
+        EventRegistrationDTO responseDTO = new EventRegistrationDTO(
+                registration.getId(),
+                eventId,
+                userId
+        );
         return ResponseEntity.ok(new SuccessResponse<>(responseDTO));
     }
 
@@ -82,7 +91,7 @@ public class EventRegistrationController {
      * @return a ResponseEntity containing a {@link SuccessResponse} with a list of registrations for the specified user and HTTP status 200 (OK)
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByUserId(@PathVariable String userId) {
+    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByUserId(@PathVariable Long userId) {
         List<EventRegistrationDTO> registrations = registrationService.getRegistrationsByUserId(userId);
         return ResponseEntity.ok(new SuccessResponse<>(registrations));
     }

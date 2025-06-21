@@ -30,7 +30,7 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
      * @param userId The ID of the user.
      * @return A list of registrations for the specified user.
      */
-    List<EventRegistration> findByUserId(String userId);
+    List<EventRegistration> findByUserId(Long userId);
 
     /**
      * Check if a registration exists for a specific event and user.
@@ -39,7 +39,7 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
      * @param userId The ID of the user.
      * @return True if the registration exists, false otherwise.
      */
-    boolean existsByEventIdAndUserId(String eventId, String userId);
+    boolean existsByEventIdAndUserId(String eventId, Long userId);
 
     /**
      * Find a registration by event ID and user ID.
@@ -48,5 +48,5 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
      * @param userId The ID of the user.
      * @return An Optional containing the registration if found, or empty if not found.
      */
-    Optional<EventRegistration> findByEventIdAndUserId(String eventId, String userId);
+    Optional<EventRegistration> findByEventIdAndUserId(String eventId, Long userId);
 }
