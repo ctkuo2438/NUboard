@@ -24,18 +24,18 @@ import com.neu.nuboard.exception.SuccessResponse;
 import com.neu.nuboard.model.User;
 import com.neu.nuboard.service.UserService;
 
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
-    
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    
+
     /**
      * 获取所有用户
      * 本质：把一组User对象转换成一组Map对象。
@@ -51,11 +51,11 @@ public class UserController {
     public ResponseEntity<SuccessResponse<List<UserCreateDTO>>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         List<UserCreateDTO> response = users.stream()
-            .map(this::convertUserToDTO)
-            .collect(Collectors.toList());
+                .map(this::convertUserToDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
-    
+
     /**
      * 根据ID获取用户
      * @param id 用户ID
@@ -67,12 +67,12 @@ public class UserController {
         UserCreateDTO response = convertUserToDTO(user);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
-    
+
     /**
      * 创建新用户
      * @param userDTO 用户创建DTO
      * @return 创建成功的用户
-     * 
+     *
      * Restful Api端点，接收前端提交的用户数据并创建新用户
      */
     @PostMapping
@@ -81,7 +81,7 @@ public class UserController {
         UserCreateDTO response = convertUserToDTO(createdUser);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
-    
+
     /**
      * 修改用户信息
      * @param id 用户ID
@@ -94,7 +94,7 @@ public class UserController {
         UserCreateDTO response = convertUserToDTO(updatedUser);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
-    
+
     /**
      * 删除用户
      * @param id 用户ID
@@ -105,7 +105,7 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
+
     /**
      * 搜索用户，支持通过用户名或邮箱搜索
      * @param username 用户名关键字（可选）
@@ -117,15 +117,15 @@ public class UserController {
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email) {
         try {
-            if ((username == null || username.trim().isEmpty()) && 
-                (email == null || email.trim().isEmpty())) {
+            if ((username == null || username.trim().isEmpty()) &&
+                    (email == null || email.trim().isEmpty())) {
                 throw new BusinessException(ErrorCode.USER_SEARCH_KEYWORD_EMPTY);
             }
             String keyword = (username != null && !username.trim().isEmpty()) ? username : email;
             List<User> users = userService.searchUsers(keyword);
             List<UserCreateDTO> response = users.stream()
-                .map(this::convertUserToDTO)
-                .collect(Collectors.toList());
+                    .map(this::convertUserToDTO)
+                    .collect(Collectors.toList());
             return ResponseEntity.ok(new SuccessResponse<>(response));
         } catch (BusinessException e) {
             throw e;
@@ -133,7 +133,7 @@ public class UserController {
             throw new BusinessException(ErrorCode.UNKNOWN_ERROR);
         }
     }
-    
+
     /**
      * 将User实体转换为响应对象
      * @param user 用户实体

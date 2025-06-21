@@ -6,8 +6,8 @@ function CreateUser(){
         username: "",
         email: "",
         program: "",
-        locationId: null,
-        collegeId: null,
+        locationId: "",
+        collegeId: "",
     });
 
     async function createUser(){
@@ -36,8 +36,8 @@ function CreateUser(){
                 username: "",
                 email: "",
                 program: "",
-                locationId: null,
-                collegeId: null,
+                locationId: "",
+                collegeId: "",
             });
 
         }
