@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:5173/") // Make data transmit between different servers.
+@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true") // Make data transmit between different servers.
 @RestController
 @RequestMapping("/api/locations")
 public class LocationController {
