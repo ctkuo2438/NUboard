@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Set;
+import com.neu.nuboard.utils.SnowflakeIDGenerator;
 
 /**
  * Service class for managing event-related business logic.
@@ -20,10 +21,14 @@ import java.util.Set;
 public class EventService {
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
+    private final SnowflakeIDGenerator snowflakeIdGenerator;
 
-    public EventService(EventRepository eventRepository, LocationRepository locationRepository) {
+    public EventService(EventRepository eventRepository,
+                        LocationRepository locationRepository,
+                        SnowflakeIDGenerator snowflakeIdGenerator) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
+        this.snowflakeIdGenerator = snowflakeIdGenerator;
     }
 
     /**
@@ -39,6 +44,9 @@ public class EventService {
         // Create event using factory method
         Event event = Event.fromDTO(eventCreateDTO);
         event.setLocation(location);
+        
+        // Generate ID using Snowflake
+        event.setId(snowflakeIdGenerator.nextId());
 
         // Save the event to the database
         Event savedEvent = eventRepository.save(event);
@@ -79,7 +87,7 @@ public class EventService {
      * @param eventCreateDTO The DTO containing updated event details.
      * @return EventResponseDTO containing the updated event details.
      */
-    public EventResponseDTO updateEvent(String id, EventCreateDTO eventCreateDTO) {
+    public EventResponseDTO updateEvent(Long id, EventCreateDTO eventCreateDTO) {
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
@@ -99,7 +107,7 @@ public class EventService {
      * Deletes an event.
      * @param id The ID of the event to delete.
      */
-    public void deleteEvent(String id) {
+    public void deleteEvent(Long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
