@@ -1,7 +1,6 @@
 package com.neu.nuboard.model;
 
 import com.neu.nuboard.dto.EventCreateDTO;
-import com.neu.nuboard.utils.UUIDutil;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -15,8 +14,8 @@ public class Event {
     }
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "varchar(255)")
-    private String id;
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
     @Column(name = "title", nullable = false, length = 255)
     private String title;
@@ -38,7 +37,7 @@ public class Event {
     private String address;
 
     @Column(name = "creator_id", nullable = false)
-    private String creatorId;
+    private Long creatorId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "organizer_type", nullable = false)
@@ -53,7 +52,6 @@ public class Event {
 
     public Event() {
         // Default constructor required by JPA
-        this.id = UUIDutil.getId();
     }
 
     /**
@@ -88,7 +86,7 @@ public class Event {
     }
 
     // Getters
-    public String getId() { return id; }
+    public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public LocalDateTime getStartTime() { return startTime; }
@@ -96,11 +94,12 @@ public class Event {
     public Location getLocation() { return location; }
     public Long getLocationId() { return location != null ? location.getId() : null; }
     public String getAddress() { return address; }
-    public String getCreatorId() { return creatorId; }
+    public Long getCreatorId() { return creatorId; }
     public OrganizerType getOrganizerType() { return organizerType; }
     public Set<EventRegistration> getRegistrations() { return registrations; }
 
     // Setters
+    public void setId(Long id) { this.id = id; }
     public void setLocation(Location location) { this.location = location; }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * REST controller for managing events.
  */
-@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:80"}, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
@@ -65,7 +65,7 @@ public class EventController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<SuccessResponse<EventResponseDTO>> updateEvent(
-            @PathVariable String id,
+            @PathVariable Long id,
             @Valid @RequestBody EventCreateDTO eventCreateDTO) {
         EventResponseDTO updatedEvent = eventService.updateEvent(id, eventCreateDTO);
         return ResponseEntity.ok(new SuccessResponse<>(updatedEvent));
@@ -77,7 +77,7 @@ public class EventController {
      * @return SuccessResponse with no data.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<SuccessResponse<Void>> deleteEvent(@PathVariable String id) {
+    public ResponseEntity<SuccessResponse<Void>> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.ok(new SuccessResponse<>());
     }

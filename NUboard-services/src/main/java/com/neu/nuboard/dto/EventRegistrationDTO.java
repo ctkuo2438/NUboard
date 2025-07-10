@@ -3,7 +3,7 @@ package com.neu.nuboard.dto;
 public class EventRegistrationDTO {
 
     private Long id;
-    private String eventId;
+    private Long eventId;
     private Long userId;
 
     /**
@@ -19,7 +19,7 @@ public class EventRegistrationDTO {
      * @param eventId The ID of the event.
      * @param userId The ID of the user.
      */
-    public EventRegistrationDTO(Long id, String eventId, Long userId) {
+    public EventRegistrationDTO(Long id, Long eventId, Long userId) {
         this.id = id;
         this.eventId = eventId;
         this.userId = userId;
@@ -36,8 +36,8 @@ public class EventRegistrationDTO {
      * Get the ID of the event.
      * @return The ID of the event.
      */
-    public String getEventId() { return eventId; }
-    public void setEventId(String eventId) { this.eventId = eventId; }
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
 
     /**
      * Get the ID of the user.

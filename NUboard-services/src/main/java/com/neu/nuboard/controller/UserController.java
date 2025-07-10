@@ -24,7 +24,7 @@ import com.neu.nuboard.exception.SuccessResponse;
 import com.neu.nuboard.model.User;
 import com.neu.nuboard.service.UserService;
 
-@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:80"}, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

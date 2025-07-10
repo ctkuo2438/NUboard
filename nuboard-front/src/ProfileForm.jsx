@@ -29,10 +29,25 @@ function ProfileForm() {
                     return;
                 }
 
+                // Check if profile already exists
+                try {
+                    const profileRes = await axios.get('http://localhost:8080/api/profile');
+                    // If profile exists, redirect to main app
+                    if (profileRes.data) {
+                        navigate('/nuboard');
+                        return;
+                    }
+                } catch (profileErr) {
+                    // Profile doesn't exist, continue to show creation form
+                    console.log('No existing profile found, showing creation form');
+                }
+
                 const [locationsRes, collegesRes] = await Promise.all([
                     axios.get('http://localhost:8080/api/locations'),
                     axios.get('http://localhost:8080/api/colleges')
                 ]);
+                console.log('Locations response:', locationsRes.data);
+                console.log('Colleges response:', collegesRes.data);
                 setLocations(locationsRes.data.data);
                 setColleges(collegesRes.data.data);
             } catch (err) {
@@ -41,7 +56,7 @@ function ProfileForm() {
             }
         };
         fetchData();
-    }, []);
+    }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -128,6 +143,7 @@ function ProfileForm() {
                         required
                     >
                         <option value="">Select a location</option>
+                        {console.log('Rendering locations:', locations)}
                         {locations.map(location => (
                             <option key={location.id} value={location.id}>
                                 {location.name}
@@ -146,6 +162,7 @@ function ProfileForm() {
                         required
                     >
                         <option value="">Select a college</option>
+                        {console.log('Rendering colleges:', colleges)}
                         {colleges.map(college => (
                             <option key={college.id} value={college.id}>
                                 {college.name}

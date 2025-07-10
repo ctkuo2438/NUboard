@@ -26,7 +26,7 @@ public class EventCreateDTO {
     private String endTime;
     private Long locationId;
     private String address;
-    private String creatorId;
+    private Long creatorId;
     private String organizerType;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -135,9 +135,9 @@ public class EventCreateDTO {
      * Get the creator of the event.
      * @return The name of the creator.
      */
-    public String getCreatorId() { return creatorId; }
-    public void setCreatorId(String creatorId) {
-        if (creatorId == null || creatorId.trim().isEmpty()) {
+    public Long getCreatorId() { return creatorId; }
+    public void setCreatorId(Long creatorId) {
+        if (creatorId == null) {
             throw new BusinessException(ErrorCode.EVENT_INVALID_CREATOR);
         }
         this.creatorId = creatorId;

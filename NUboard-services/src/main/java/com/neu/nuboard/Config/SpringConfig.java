@@ -31,6 +31,7 @@ public class SpringConfig {
                 )
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/", "/login", "/oauth2/**").permitAll();
+                    registry.requestMatchers("/api/locations/**", "/api/colleges/**").permitAll();
                     registry.requestMatchers("/api/**").authenticated();
                     registry.anyRequest().authenticated();
                 })
@@ -39,9 +40,9 @@ public class SpringConfig {
                         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
                         String email = oauthToken.getPrincipal().getAttribute("email");
                         if (userRepository.findByEmail(email).isEmpty()) {
-                            response.sendRedirect("http://localhost:5173/create-profile");
+                            response.sendRedirect("http://localhost:3000/create-profile");
                         } else {
-                            response.sendRedirect("http://localhost:5173/nuboard");
+                            response.sendRedirect("http://localhost:3000/nuboard");
                         }
                     })
                 )
@@ -51,7 +52,11 @@ public class SpringConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:80"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
