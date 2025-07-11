@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,8 +38,7 @@ public class UserController {
     }
 
     /**
-     * 获取所有用户
-     * 本质：把一组User对象转换成一组Map对象。
+     * 获取所有用户 - 仅管理员可访问
      * @return 用户列表
      * 1.ResponseEntity是spring框架的类，用来封装http的响应（状态码、头信息和响应体）
      * 2.List<Map<String, Object>>表示响应体是一个列表，列表中每个元素是一个键值对映射
@@ -48,6 +48,7 @@ public class UserController {
      * 6.return new ResponseEntity<>(response, HttpStatus.OK)返回响应实体，状态码为200
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<SuccessResponse<List<UserCreateDTO>>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         List<UserCreateDTO> response = users.stream()
@@ -58,10 +59,12 @@ public class UserController {
 
     /**
      * 根据ID获取用户
+     * 用户可以查看自己的信息，管理员可以查看所有用户
      * @param id 用户ID
      * @return 用户信息
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER_VIEW') or #id == authentication.principal.id.toString()")
     public ResponseEntity<SuccessResponse<UserCreateDTO>> getUserById(@PathVariable String id) {
         User user = userService.getUserById(id);
         UserCreateDTO response = convertUserToDTO(user);
@@ -69,13 +72,14 @@ public class UserController {
     }
 
     /**
-     * 创建新用户
+     * 创建新用户 - 仅管理员可访问
      * @param userDTO 用户创建DTO
      * @return 创建成功的用户
      *
      * Restful Api端点，接收前端提交的用户数据并创建新用户
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SuccessResponse<UserCreateDTO>> createUser(@Validated @RequestBody UserCreateDTO userDTO) {
         User createdUser = userService.createUser(userDTO);
         UserCreateDTO response = convertUserToDTO(createdUser);
@@ -84,6 +88,7 @@ public class UserController {
 
     /**
      * 修改用户信息
+     * 用户可以修改自己的信息，管理员可以修改所有用户
      * @param id 用户ID
      * @param userDTO 用户信息DTO
      * @return 更新后的用户
@@ -96,23 +101,25 @@ public class UserController {
     }
 
     /**
-     * 删除用户
+     * 删除用户 - 仅管理员可访问
      * @param id 用户ID
      * @return 无内容响应
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER_DELETE')")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
-     * 搜索用户，支持通过用户名或邮箱搜索
+     * 搜索用户 - 仅管理员可访问
      * @param username 用户名关键字（可选）
      * @param email 邮箱关键字（可选）
      * @return 匹配的用户列表
      */
     @GetMapping("/search")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<SuccessResponse<List<UserCreateDTO>>> searchUsers(
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email) {
@@ -137,7 +144,7 @@ public class UserController {
     /**
      * 将User实体转换为响应对象
      * @param user 用户实体
-     * @return 响应Map
+     * @return 响应DTO
      */
     private UserCreateDTO convertUserToDTO(User user) {
         UserCreateDTO dto = new UserCreateDTO();
