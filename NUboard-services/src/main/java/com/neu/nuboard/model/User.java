@@ -2,18 +2,12 @@ package com.neu.nuboard.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.neu.nuboard.exception.BusinessException;
 import com.neu.nuboard.exception.ErrorCode;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
@@ -42,28 +36,76 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EventRegistration> registrations = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserRole> userRoles = new HashSet<>();
+
+    // controls account status, enabled = true Account is ACTIVE, enabled = false Account is DISABLED
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = true;
+
+    @Column(name = "auth_provider")
+    private String authProvider = "google";
+
+    // ADDED: set a Profile completion flag for OAuth2 users
+    @Column(name = "profile_completed", nullable = false)
+    private boolean profileCompleted = false;
+
     /**
      * JPA要求的默认无参构造函数。
      */
-    protected User() {
+    public User() {
     }
 
     /**
      * 创建一个完整参数的用户构造函数。
      *
      * @param username 用户名。
-     * @param program 用户所学专业。
      * @param email 用户邮箱。
      */
+    public User(Long id, String username, String email) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.authProvider = "google";
+        this.enabled = true;
+        this.profileCompleted = false;
+    }
+
+    // Constructor for regular user creation (with program)
     public User(Long id, String username, String program, String email) {
         this.id = id;
-        this.setUsername(username);
-        this.setProgram(program);
-        this.setEmail(email);
+        this.username = username;
+        this.program = program;
+        this.email = email;
+        this.authProvider = "local";
+        this.enabled = true;
+        this.profileCompleted = false;
     }
-    
-    // Getters
+
+    // Helper methods to work with roles
+    public Set<Role> getRoles() {
+        return userRoles.stream()
+                .map(UserRole::getRole)
+                .collect(Collectors.toSet());
+    }
+
+    public void addRole(Role role) {
+        UserRole userRole = new UserRole(this, role);
+        userRoles.add(userRole);
+    }
+
+    public void removeRole(Role role) {
+        userRoles.removeIf(ur -> ur.getRole().equals(role));
+    }
+
+    public boolean hasRole(String roleName) {
+        return userRoles.stream()
+                .anyMatch(ur -> ur.getRole().getName().equals(roleName));
+    }
+
+    // Getters and Setters
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) {
@@ -117,16 +159,32 @@ public class User {
     public Set<EventRegistration> getRegistrations() { return registrations; }
     public void setRegistrations(Set<EventRegistration> registrations) { this.registrations = registrations; }
 
+    public Set<UserRole> getUserRoles() { return userRoles; }
+    public void setUserRoles(Set<UserRole> userRoles) { this.userRoles = userRoles; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public String getAuthProvider() { return authProvider; }
+    public void setAuthProvider(String authProvider) { this.authProvider = authProvider; }
+
+    public boolean isProfileCompleted() { return profileCompleted; }
+    public void setProfileCompleted(boolean profileCompleted) {
+        this.profileCompleted = profileCompleted;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", location=" + location +
-                ", college=" + college +
+                ", location=" + (location != null ? location.getName() : "null") +
+                ", college=" + (college != null ? college.getName() : "null") +
                 ", program='" + program + '\'' +
                 ", email='" + email + '\'' +
                 ", registrations.size=" + (registrations != null ? registrations.size() : "0") +
+                ", roles.size=" + (userRoles != null ? userRoles.size() : "0") +
+                ", profileCompleted=" + profileCompleted +
                 '}';
     }
 }
