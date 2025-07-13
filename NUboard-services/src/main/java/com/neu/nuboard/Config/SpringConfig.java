@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,33 +18,22 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
 public class SpringConfig {
 
     @Autowired
     private UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringConfig.class);
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        logger.info("=== CONFIGURING SECURITY FILTER CHAIN ===");
-
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-                    session.maximumSessions(1);
-                    session.sessionFixation().migrateSession();
                 })
                 .authorizeHttpRequests(registry -> {
-                    // *** IMPORTANT: Order matters! Most specific rules first ***
-
                     // Public endpoints (no authentication required)
-                    registry.requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll();
-                    registry.requestMatchers("/api/oauth2/code/*").permitAll();
-
+                    registry.requestMatchers("/", "/login", "/oauth2/**").permitAll();
                     // API endpoints
                     registry.requestMatchers("/api/locations", "/api/colleges").permitAll();
                     registry.requestMatchers("/api/test/public").permitAll();
