@@ -74,7 +74,7 @@ public class EventController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('EVENT_UPDATE')")
     public ResponseEntity<SuccessResponse<EventResponseDTO>> updateEvent(
-            @PathVariable String id,
+            @PathVariable Long id,
             @Valid @RequestBody EventCreateDTO eventCreateDTO) {
         EventResponseDTO updatedEvent = eventService.updateEvent(id, eventCreateDTO);
         return ResponseEntity.ok(new SuccessResponse<>(updatedEvent));
@@ -88,7 +88,7 @@ public class EventController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('EVENT_DELETE')")
-    public ResponseEntity<SuccessResponse<Void>> deleteEvent(@PathVariable String id) {
+    public ResponseEntity<SuccessResponse<Void>> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.ok(new SuccessResponse<Void>(null));
     }

@@ -1,7 +1,5 @@
 package com.neu.nuboard.Config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,14 +26,14 @@ public class SpringConfig {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> {
-                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-                })
+                .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
                 .authorizeHttpRequests(registry -> {
                     // Public endpoints (no authentication required)
                     registry.requestMatchers("/", "/login", "/oauth2/**").permitAll();
                     // API endpoints
-                    registry.requestMatchers("/api/locations", "/api/colleges").permitAll();
+                    registry.requestMatchers("/api/locations/**", "/api/colleges/**").permitAll();
                     registry.requestMatchers("/api/test/public").permitAll();
 
                     // TEST ENDPOINTS

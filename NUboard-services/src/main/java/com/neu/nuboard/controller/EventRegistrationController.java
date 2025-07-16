@@ -44,7 +44,7 @@ public class EventRegistrationController {
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('EVENT_REGISTER') and (hasRole('ADMIN'))")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> registerForEvent(
-            @RequestParam("eventId") String eventId,
+            @RequestParam("eventId") Long eventId,
             @RequestParam("userId") Long userId) {
         EventRegistration registration = registrationService.registerForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(
@@ -66,7 +66,7 @@ public class EventRegistrationController {
     @PostMapping("/register/{eventId}/{userId}")
     @PreAuthorize("hasAuthority('EVENT_REGISTER')")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> registerUserForEvent(
-            @PathVariable String eventId,
+            @PathVariable Long eventId,
             @PathVariable Long userId) {
         EventRegistration registration = registrationService.registerForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(
@@ -89,7 +89,7 @@ public class EventRegistrationController {
     @DeleteMapping("/unregister")
     @PreAuthorize("hasAuthority('EVENT_UNREGISTER') and (hasRole('ADMIN'))")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> unregisterForEvent(
-            @RequestParam("eventId") String eventId,
+            @RequestParam("eventId") Long eventId,
             @RequestParam("userId") Long userId) {
         EventRegistration registration = registrationService.unregisterForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(
@@ -111,7 +111,7 @@ public class EventRegistrationController {
     @DeleteMapping("/unregister/{eventId}/{userId}")
     @PreAuthorize("hasAuthority('EVENT_UNREGISTER')")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> unregisterUserFromEvent(
-            @PathVariable String eventId,
+            @PathVariable Long eventId,
             @PathVariable Long userId) {
         EventRegistration registration = registrationService.unregisterForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(
@@ -131,7 +131,7 @@ public class EventRegistrationController {
      */
     @GetMapping("/event/{eventId}")
     @PreAuthorize("hasAuthority('REGISTRATION_VIEW')")
-    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByEventId(@PathVariable String eventId) {
+    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByEventId(@PathVariable Long eventId) {
         List<EventRegistrationDTO> registrations = registrationService.getRegistrationsByEventId(eventId);
         return ResponseEntity.ok(new SuccessResponse<>(registrations));
     }
