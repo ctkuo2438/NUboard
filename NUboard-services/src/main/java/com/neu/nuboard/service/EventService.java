@@ -116,6 +116,44 @@ public class EventService {
     }
 
     /**
+     * Retrieves all events created by a specific user.
+     * @param creatorId The ID of the creator.
+     * @return List of EventResponseDTO containing events created by the user.
+     */
+    public List<EventResponseDTO> getEventsByCreatorId(String creatorId) {
+        return eventRepository.findAll()
+                .stream()
+                .filter(event -> event.getCreatorId().equals(creatorId))
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves events by location.
+     * @param locationId The ID of the location.
+     * @return List of EventResponseDTO containing events at the specified location.
+     */
+    public List<EventResponseDTO> getEventsByLocation(Long locationId) {
+        return eventRepository.findAll()
+                .stream()
+                .filter(event -> event.getLocationId() != null && event.getLocationId().equals(locationId))
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves events by organizer type.
+     * @param organizerType The type of organizer.
+     * @return List of EventResponseDTO containing events with the specified organizer type.
+     */
+    public List<EventResponseDTO> getEventsByOrganizerType(Event.OrganizerType organizerType) {
+        return eventRepository.findByOrganizerType(organizerType)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Maps an Event entity to an EventResponseDTO.
      * @param event The Event entity to map.
      * @return EventResponseDTO containing the event details.

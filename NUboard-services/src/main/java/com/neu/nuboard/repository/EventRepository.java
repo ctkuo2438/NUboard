@@ -34,4 +34,19 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      */
     @Query("SELECT e FROM Event e WHERE e.organizerType = :organizerType")
     List<Event> findByOrganizerType(@Param("organizerType") Event.OrganizerType organizerType);
+
+    /**
+     * Find events by creator ID.
+     * @param creatorId The ID of the event creator.
+     * @return List of events created by the specified user.
+     */
+    List<Event> findByCreatorIdOrderByStartTimeDesc(String creatorId);
+
+    /**
+     * Find events by location ID.
+     * @param locationId The ID of the location.
+     * @return List of events at the specified location.
+     */
+    @Query("SELECT e FROM Event e WHERE e.location.id = :locationId ORDER BY e.startTime")
+    List<Event> findByLocationId(@Param("locationId") Long locationId);
 }

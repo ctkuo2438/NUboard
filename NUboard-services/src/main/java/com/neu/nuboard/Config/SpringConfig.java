@@ -30,9 +30,22 @@ public class SpringConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .authorizeHttpRequests(registry -> {
+                    // Public endpoints (no authentication required)
                     registry.requestMatchers("/", "/login", "/oauth2/**").permitAll();
+                    // API endpoints
                     registry.requestMatchers("/api/locations/**", "/api/colleges/**").permitAll();
+                    registry.requestMatchers("/api/test/public").permitAll();
+
+                    // TEST ENDPOINTS
+                    registry.requestMatchers("/api/test/**").permitAll();
+
+                    // Admin endpoints
+                    registry.requestMatchers("/api/admin/**").hasRole("ADMIN");
+
+                    // Protected API endpoints (requires authentication)
                     registry.requestMatchers("/api/**").authenticated();
+
+                    // Everything else requires authentication
                     registry.anyRequest().authenticated();
                 })
                 .oauth2Login(oauth2 -> oauth2
@@ -40,9 +53,9 @@ public class SpringConfig {
                         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
                         String email = oauthToken.getPrincipal().getAttribute("email");
                         if (userRepository.findByEmail(email).isEmpty()) {
-                            response.sendRedirect("http://localhost:3000/create-profile");
+                            response.sendRedirect("http://localhost:5173/create-profile");
                         } else {
-                            response.sendRedirect("http://localhost:3000/nuboard");
+                            response.sendRedirect("http://localhost:5173/nuboard");
                         }
                     })
                 )
@@ -52,11 +65,7 @@ public class SpringConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "http://localhost:5173",
-            "http://localhost:80"
-        ));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

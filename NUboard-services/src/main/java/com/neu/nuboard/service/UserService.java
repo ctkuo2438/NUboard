@@ -181,9 +181,9 @@ public class UserService {
             if (keyword.length() > 255) {
                 throw new BusinessException(ErrorCode.USER_SEARCH_INVALID_KEYWORD);
             }
-            
-            List<User> users = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword.trim(), keyword.trim());
-            
+
+            List<User> users = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword.trim());
+
             if (users.isEmpty()) {
                 throw new BusinessException(ErrorCode.USER_SEARCH_NO_RESULTS);
             }
