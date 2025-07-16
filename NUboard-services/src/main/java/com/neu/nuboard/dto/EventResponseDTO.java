@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class EventResponseDTO {
 
-    private String id;
+    private Long id;
     private String title;
     private String description;
     
@@ -21,7 +21,7 @@ public class EventResponseDTO {
     private LocalDateTime endTime;
     private Long locationId;
     private String address;
-    private String creatorId;
+    private Long creatorId;
     private OrganizerType organizerType;
     private Set<EventRegistrationDTO> registrations;
 
@@ -29,8 +29,8 @@ public class EventResponseDTO {
      * Get the ID of the event.
      * @return The ID of the event.
      */
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     /**
      * Get the title of the event.
@@ -78,8 +78,8 @@ public class EventResponseDTO {
      * Get the creator of the event.
      * @return The name of the creator.
      */
-    public String getCreatorId() { return creatorId; }
-    public void setCreatorId(String creatorId) { this.creatorId = creatorId; }
+    public Long getCreatorId() { return creatorId; }
+    public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
 
     /**
      * Get the organizer type of the event.

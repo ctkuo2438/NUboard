@@ -14,7 +14,7 @@ import java.util.List;
  * REST controller for handling HTTP requests related to event registrations.
  * Base path: /api/registrations
  */
-@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:80"}, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/registrations")
 public class EventRegistrationController {
@@ -40,7 +40,7 @@ public class EventRegistrationController {
      */
     @PostMapping("/register")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> registerForEvent(
-            @RequestParam("eventId") String eventId,
+            @RequestParam("eventId") Long eventId,
             @RequestParam("userId") Long userId) {
         EventRegistration registration = registrationService.registerForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(
@@ -61,7 +61,7 @@ public class EventRegistrationController {
      */
     @DeleteMapping("/unregister")
     public ResponseEntity<SuccessResponse<EventRegistrationDTO>> unregisterForEvent(
-            @RequestParam("eventId") String eventId,
+            @RequestParam("eventId") Long eventId,
             @RequestParam("userId") Long userId) {
         EventRegistration registration = registrationService.unregisterForEvent(eventId, userId);
         EventRegistrationDTO responseDTO = new EventRegistrationDTO(
@@ -79,7 +79,7 @@ public class EventRegistrationController {
      * @return a ResponseEntity containing a {@link SuccessResponse} with a list of registrations for the specified event and HTTP status 200 (OK)
      */
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByEventId(@PathVariable String eventId) {
+    public ResponseEntity<SuccessResponse<List<EventRegistrationDTO>>> getRegistrationsByEventId(@PathVariable Long eventId) {
         List<EventRegistrationDTO> registrations = registrationService.getRegistrationsByEventId(eventId);
         return ResponseEntity.ok(new SuccessResponse<>(registrations));
     }
