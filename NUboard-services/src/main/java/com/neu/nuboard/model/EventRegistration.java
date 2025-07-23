@@ -10,6 +10,7 @@ public class EventRegistration {
 
     @Id
     @Column(name = "id")
+    // ID is manually generated using SnowflakeIDGenerator in the service layer
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,7 +31,7 @@ public class EventRegistration {
         this.user = user;
     }
 
-    // Getters 和 Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
