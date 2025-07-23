@@ -16,22 +16,30 @@ import com.neu.nuboard.repository.LocationRepository;
 import com.neu.nuboard.repository.UserRepository;
 import com.neu.nuboard.utils.SnowflakeIDGenerator;
 
+/**
+ * 用户相关的Kafka消息流已自动化：
+ * - createUser、updateUser、deleteUser方法会自动调用KafkaProducerService，发送用户变动消息。
+ * - event和event registration如需自动消息流，也应在EventService、EventRegistrationService中调用KafkaProducerService的相关方法。
+ */
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final CollegeRepository collegeRepository;
     private final SnowflakeIDGenerator snowflakeIdGenerator;
+    private final KafkaProducerService kafkaProducerService;
     
     @Autowired
     public UserService(UserRepository userRepository, 
                       LocationRepository locationRepository,
                       CollegeRepository collegeRepository,
-                      SnowflakeIDGenerator snowflakeIdGenerator) {
+                      SnowflakeIDGenerator snowflakeIdGenerator,
+                      KafkaProducerService kafkaProducerService) {
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
         this.collegeRepository = collegeRepository;
         this.snowflakeIdGenerator = snowflakeIdGenerator;
+        this.kafkaProducerService = kafkaProducerService;
     }
     
     /**
@@ -92,7 +100,10 @@ public class UserService {
         }
         
         // 保存用户并返回
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        // 自动发送Kafka消息，通知用户创建
+        kafkaProducerService.sendUserCreatedEvent(savedUser);
+        return savedUser;
     }
     
     /**
@@ -137,7 +148,10 @@ public class UserService {
         }
         
         // 保存并返回更新后的用户
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        // 自动发送Kafka消息，通知用户更新
+        kafkaProducerService.sendUserUpdatedEvent(updatedUser);
+        return updatedUser;
     }
     
     /**
@@ -151,7 +165,11 @@ public class UserService {
         }
         
         // 删除用户
+        User user = userRepository.findById(Long.valueOf(id))
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         userRepository.deleteById(Long.valueOf(id));
+        // 自动发送Kafka消息，通知用户删除
+        kafkaProducerService.sendUserDeletedEvent(user);
     }
     
     /**
