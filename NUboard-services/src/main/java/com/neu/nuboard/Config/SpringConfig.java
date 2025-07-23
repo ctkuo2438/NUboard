@@ -30,8 +30,22 @@ public class SpringConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .authorizeHttpRequests(registry -> {
+                    // Public endpoints (no authentication required)
                     registry.requestMatchers("/", "/login", "/oauth2/**").permitAll();
+                    // API endpoints
+                    registry.requestMatchers("/api/locations/**", "/api/colleges/**").permitAll();
+                    registry.requestMatchers("/api/test/public").permitAll();
+
+                    // TEST ENDPOINTS
+                    registry.requestMatchers("/api/test/**").permitAll();
+
+                    // Admin endpoints
+                    registry.requestMatchers("/api/admin/**").hasRole("ADMIN");
+
+                    // Protected API endpoints (requires authentication)
                     registry.requestMatchers("/api/**").authenticated();
+
+                    // Everything else requires authentication
                     registry.anyRequest().authenticated();
                 })
                 .oauth2Login(oauth2 -> oauth2

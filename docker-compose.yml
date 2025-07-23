@@ -1,0 +1,50 @@
+services:
+  frontend:
+    build: ./nuboard-front
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - nuboard-network
+
+  backend:
+    build: ./NUboard-services
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - nuboard-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: nuboard
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - nuboard-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nuboard"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  nuboard-network:
+    driver: bridge

@@ -59,7 +59,7 @@ public class EventRegistrationService {
      * @return the saved EventRegistration entity
      * @throws BusinessException if the event or user is not found, the input is invalid, or the user is already registered
      */
-    public EventRegistration registerForEvent(@NonNull String eventId, @NonNull Long userId) {
+    public EventRegistration registerForEvent(@NonNull Long eventId, @NonNull Long userId) {
         // Find the event and user
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
@@ -91,7 +91,7 @@ public class EventRegistrationService {
      * @return the deleted EventRegistration entity (if found)
      * @throws BusinessException if the input is invalid or the registration is not found
      */
-    public EventRegistration unregisterForEvent(@NonNull String eventId, @NonNull Long userId) {
+    public EventRegistration unregisterForEvent(@NonNull Long eventId, @NonNull Long userId) {
         // Find the registration
         EventRegistration registration = registrationRepository.findByEventIdAndUserId(eventId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REGISTRATION_NOT_FOUND));
@@ -109,7 +109,7 @@ public class EventRegistrationService {
      * @return a list of {@link EventRegistrationDTO} containing the registration details
      * @throws BusinessException if the event ID is invalid
      */
-    public List<EventRegistrationDTO> getRegistrationsByEventId(@NonNull String eventId) {
+    public List<EventRegistrationDTO> getRegistrationsByEventId(@NonNull Long eventId) {
         return registrationRepository.findByEventId(eventId)
                 .stream()
                 .map(this::mapToDTO)
