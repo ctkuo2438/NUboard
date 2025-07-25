@@ -41,14 +41,14 @@ public class KafkaConsumerService {
     @KafkaListener(topics = "nuboard.event.management", groupId = "nuboard-group")
     public void consumeEventManagementEvent(EventResponseDTO msg) {
         notificationService.sendEventManagementNotification(
-            msg.getId(),
+            msg.getId() != null ? String.valueOf(msg.getId()) : null,
             msg.getTitle(),
             msg.getDescription(),
             msg.getStartTime() != null ? msg.getStartTime().toString() : null,
             msg.getEndTime() != null ? msg.getEndTime().toString() : null,
             msg.getLocationId() != null ? msg.getLocationId().toString() : null,
             msg.getAddress(),
-            msg.getCreatorId(),
+            msg.getCreatorId() != null ? String.valueOf(msg.getCreatorId()) : null,
             msg.getOrganizerType() != null ? msg.getOrganizerType().toString() : null,
             0 // 占位，原registrationsCount参数，现传0
         );
@@ -57,25 +57,23 @@ public class KafkaConsumerService {
     @KafkaListener(topics = "nuboard.event.registration", groupId = "nuboard-group")
     public void consumeEventRegistrationEvent(EventRegistrationDTO msg) {
         notificationService.sendEventRegistrationNotification(
-            null, // type
-            msg.getId() != null ? msg.getId().toString() : null,
-            msg.getUserId() != null ? msg.getUserId().toString() : null,
+            msg.getId() != null ? String.valueOf(msg.getId()) : null,
+            msg.getUserId() != null ? String.valueOf(msg.getUserId()) : null,
             msg.getUsername(),
             msg.getEmail(),
             msg.getProgram(),
             msg.getLocationName(),
             msg.getCollegeName(),
-            msg.getEventId(),
+            msg.getEventId() != null ? String.valueOf(msg.getEventId()) : null,
             msg.getEventTitle(),
             msg.getEventDescription(),
             msg.getEventAddress(),
-            msg.getEventCreatorId(),
+            msg.getEventCreatorId() != null ? String.valueOf(msg.getEventCreatorId()) : null,
             msg.getEventOrganizerType(),
             msg.getEventLocationName(),
             msg.getEventLocationId(),
             msg.getEventStartTime(),
-            msg.getEventEndTime(),
-            "" 
+            msg.getEventEndTime()
         );
     }
 }

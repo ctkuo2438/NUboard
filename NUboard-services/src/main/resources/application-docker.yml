@@ -34,6 +34,15 @@ spring:
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
             user-name-attribute: sub
 
+  kafka:
+    bootstrap-servers: broker:9092
+    consumer:
+      group-id: nuboard-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 server:
   port: 8080
 

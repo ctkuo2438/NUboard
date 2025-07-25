@@ -100,6 +100,9 @@ public class KafkaProducerService {
         dto.setId(eventRegistration.getId());
         dto.setEventId(eventRegistration.getEvent() != null ? eventRegistration.getEvent().getId() : null);
         dto.setUserId(eventRegistration.getUser() != null ? eventRegistration.getUser().getId() : null);
+        dto.setStatus(eventRegistration.getStatus());
+        dto.setRegistrationTime(eventRegistration.getRegistrationTime());
+
         // 用户相关
         if (eventRegistration.getUser() != null) {
             dto.setUsername(eventRegistration.getUser().getUsername());
