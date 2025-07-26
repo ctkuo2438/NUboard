@@ -11,9 +11,13 @@ import com.neu.nuboard.exception.ErrorCode;
 import com.neu.nuboard.model.College;
 import com.neu.nuboard.model.Location;
 import com.neu.nuboard.model.User;
+import com.neu.nuboard.model.Role;
+import com.neu.nuboard.model.UserRole;
 import com.neu.nuboard.repository.CollegeRepository;
 import com.neu.nuboard.repository.LocationRepository;
 import com.neu.nuboard.repository.UserRepository;
+import com.neu.nuboard.repository.RoleRepository;
+import com.neu.nuboard.repository.UserRoleRepository;
 import com.neu.nuboard.utils.SnowflakeIDGenerator;
 
 @Service
@@ -22,16 +26,41 @@ public class UserService {
     private final LocationRepository locationRepository;
     private final CollegeRepository collegeRepository;
     private final SnowflakeIDGenerator snowflakeIdGenerator;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
     
     @Autowired
     public UserService(UserRepository userRepository, 
                       LocationRepository locationRepository,
                       CollegeRepository collegeRepository,
-                      SnowflakeIDGenerator snowflakeIdGenerator) {
+                      SnowflakeIDGenerator snowflakeIdGenerator,
+                      RoleRepository roleRepository,
+                      UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
         this.collegeRepository = collegeRepository;
         this.snowflakeIdGenerator = snowflakeIdGenerator;
+        this.roleRepository = roleRepository;
+        this.userRoleRepository = userRoleRepository;
+    }
+
+    /**
+     * Assign the default USER role to a user
+     * @param user the user to assign the role to
+     */
+    private void assignDefaultRole(User user) {
+        // Get the default USER role
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND));
+
+        // Create UserRole relationship
+        UserRole userRoleRelation = new UserRole(user, userRole, "SYSTEM");
+
+        // Save the user role relationship
+        userRoleRepository.save(userRoleRelation);
+
+        // Add to user's role collection
+        user.getUserRoles().add(userRoleRelation);
     }
     
     /**
@@ -90,9 +119,14 @@ public class UserService {
         if (!validateUser(user)) {
             throw new BusinessException(ErrorCode.PARAM_ERROR);
         }
-        
-        // 保存用户并返回
-        return userRepository.save(user);
+
+        // 保存用户
+        User savedUser = userRepository.save(user);
+
+        // Assign the default role to manually created users too
+        assignDefaultRole(savedUser);
+
+        return savedUser;
     }
     
     /**

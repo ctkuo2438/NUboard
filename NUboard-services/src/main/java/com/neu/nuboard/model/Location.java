@@ -26,6 +26,15 @@ public class Location {
     @OneToMany(mappedBy = "location")
     private List<Event> events;
 
+    // Default constructor (required by JPA)
+    public Location() {
+    }
+
+    // Constructor for easy initialization
+    public Location(String name) {
+        this.name = name;
+    }
+
     // Getter
     public Long getId() {
         return id;

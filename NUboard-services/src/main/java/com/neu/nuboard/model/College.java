@@ -21,6 +21,15 @@ public class College {
     @OneToMany(mappedBy = "college")
     private List<User> users;
 
+    // Default constructor (required by JPA)
+    public College() {
+    }
+
+    // Constructor for easy initialization
+    public College(String name) {
+        this.name = name;
+    }
+
     //Getter
     public Long getId() {
         return id;
