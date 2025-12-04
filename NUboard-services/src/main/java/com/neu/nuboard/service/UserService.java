@@ -64,9 +64,9 @@ public class UserService {
     }
     
     /**
-     * 获取所有用户
-     * @return 用户列表
-     * @throws BusinessException 当数据库查询失败时
+     * acquire all users
+     * @return user list
+     * @throws BusinessException when database query fails
      */
     public List<User> getAllUsers() {
         try {
@@ -77,10 +77,10 @@ public class UserService {
     }
     
     /**
-     * 根据ID获取用户
-     * @param id 用户ID
-     * @return 用户对象
-     * @throws BusinessException 如果用户不存在
+     * acquire user by ID
+     * @param id user ID
+     * @return user
+     * @throws BusinessException when user not found
      */
     public User getUserById(String id) {
         return userRepository.findById(Long.valueOf(id))
@@ -88,39 +88,39 @@ public class UserService {
     }
 
     public User createUser(UserCreateDTO userDTO) {
-        // 检查用户名是否已存在
+        // check if username already exists
         if (userRepository.existsByUsername(userDTO.getUsername())) {
             throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
         }
-        // 检查电子邮件是否已存在
+        // check if email already exists
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }  
 
-        // 获取Location和College实体
+        // get Location and College entities
         Location location = locationRepository.findById(userDTO.getLocationId())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_LOCATION_SELECTION));
         College college = collegeRepository.findById(userDTO.getCollegeId())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_PROGRAM));
 
-        // 创建用户对象
+        // create user object
         User user = new User(
             snowflakeIdGenerator.nextId(),
             userDTO.getUsername(),
             userDTO.getProgram(),
             userDTO.getEmail()
         );
-        
-        // 设置location和college
+
+        // set location and college
         user.setLocation(location);
         user.setCollege(college);
         
-        // 验证用户数据
+        // validate user data
         if (!validateUser(user)) {
             throw new BusinessException(ErrorCode.PARAM_ERROR);
         }
 
-        // 保存用户
+        // save user
         User savedUser = userRepository.save(user);
 
         // Assign the default role to manually created users too
@@ -130,68 +130,68 @@ public class UserService {
     }
     
     /**
-     * 更新用户信息
-     * @param id 要更新的用户ID
-     * @param userDTO 用户信息DTO
-     * @return 更新后的用户
+     * update user information
+     * @param id user ID
+     * @param userDTO user data transfer object
+     * @return updated user
      */
     public User updateUser(String id, UserCreateDTO userDTO) {
-        // 查找要更新的用户
+        // find user to update
         User user = userRepository.findById(Long.valueOf(id))
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
-        // 如果用户名变更了，检查是否已存在
+        // check if username has changed and exists
         if (!user.getUsername().equals(userDTO.getUsername()) && 
             userRepository.existsByUsername(userDTO.getUsername())) {
             throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
         }
         
-        // 如果邮箱变更了，检查是否已存在
+        // if email has changed, check if new email exists
         if (!user.getEmail().equals(userDTO.getEmail()) && 
             userRepository.existsByEmail(userDTO.getEmail())) {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
-        // 获取Location和College实体
+        // get Location and College entities
         Location location = locationRepository.findById(userDTO.getLocationId())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_LOCATION_SELECTION));
         College college = collegeRepository.findById(userDTO.getCollegeId())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_INVALID_PROGRAM));
                 
-        // 更新用户信息
+        // update user fields
         user.setUsername(userDTO.getUsername());
         user.setProgram(userDTO.getProgram());
         user.setEmail(userDTO.getEmail());
         user.setLocation(location);
         user.setCollege(college);
         
-        // 验证用户数据
+        // validate updated user data
         if (!validateUser(user)) {
             throw new BusinessException(ErrorCode.PARAM_ERROR);
         }
         
-        // 保存并返回更新后的用户
+        // sava user info and return
         return userRepository.save(user);
     }
     
     /**
-     * 删除用户
-     * @param id 要删除的用户ID
+     * delete user
+     * @param id user ID
      */
     public void deleteUser(String id) {
-        // 检查用户是否存在
+        // check if user exists
         if (!userRepository.existsById(Long.valueOf(id))) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
-        
-        // 删除用户
+
+        // delete user
         userRepository.deleteById(Long.valueOf(id));
     }
     
     /**
-     * 验证必填字段是否存在且不为空。
-     * @param user 要验证的用户对象
-     * @return 如果用户有效则返回true，否则返回false。
+     * validate user object
+     * @param user user object to validate
+     * @return true if user is valid, false otherwise
      */
     private boolean validateUser(User user) {
        return user.getUsername() != null && !user.getUsername().trim().isEmpty() &&
@@ -201,17 +201,17 @@ public class UserService {
     }
 
     /**
-     * 根据关键字搜索用户，支持用户名或邮箱模糊匹配
-     * @param keyword 搜索关键字
-     * @return 匹配的用户列表
+     *  search users by keyword (username or email)
+     * @param keyword search keyword
+     * @return list of users matching the keyword
      */
     public List<User> searchUsers(String keyword) {
         try {
             if (keyword == null || keyword.trim().isEmpty()) {
                 throw new BusinessException(ErrorCode.USER_SEARCH_KEYWORD_EMPTY);
             }
-            
-            // 验证关键字格式
+
+            // validate keyword length
             if (keyword.length() > 255) {
                 throw new BusinessException(ErrorCode.USER_SEARCH_INVALID_KEYWORD);
             }

@@ -17,6 +17,7 @@ axios.defaults.withCredentials = true;
 function App() {
     const [page, setPage] = useState('/nuboard');
     const [userEmail, setUserEmail] = useState('');
+    const [userName, setUserName] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,6 +28,7 @@ function App() {
                 });
                 if (response.data && response.data.email) {
                     setUserEmail(response.data.email);
+                    setUserName(response.data.name || response.data.email.split('@')[0]);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -38,34 +40,48 @@ function App() {
     }, [navigate]);
 
     const navItems = [
-        { path: '/nuboard', label: 'NUboard', component: NUboard },
-        { path: '/nuboard/create-user', label: 'Create User', component: CreateUser },
-        { path: '/nuboard/update-user', label: 'Update User', component: UpdateUser },
-        { path: '/nuboard/search-user', label: 'Search User', component: SearchUser },
-        { path: '/nuboard/delete-user', label: 'Delete User', component: DeleteUser },
-        { path: '/nuboard/user-list', label: 'User List', component: UserList },
-        { path: '/nuboard/college-list', label: 'College List', component: CollegeList },
-        { path: '/nuboard/location-list', label: 'Location List', component: LocationList },
-        { path: '/nuboard/user-profile', label: 'User Profile', component: UserProfile },
+        { path: '/nuboard', label: '📅 Events', component: NUboard },
+        { path: '/nuboard/user-profile', label: '👤 My Profile', component: UserProfile },
+        { path: '/nuboard/create-user', label: '➕ Create User', component: CreateUser },
+        { path: '/nuboard/update-user', label: '✏️ Update User', component: UpdateUser },
+        { path: '/nuboard/search-user', label: '🔍 Search User', component: SearchUser },
+        { path: '/nuboard/delete-user', label: '🗑️ Delete User', component: DeleteUser },
+        { path: '/nuboard/user-list', label: '📋 User List', component: UserList },
+        { path: '/nuboard/college-list', label: '🏫 Colleges', component: CollegeList },
+        { path: '/nuboard/location-list', label: '📍 Locations', component: LocationList },
     ];
 
     const handleLogout = () => {
         setUserEmail('');
+        setUserName('');
         navigate('/GoogleSignup');
+    };
+
+    const getInitials = (name) => {
+        if (!name) return '?';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     };
 
     return (
         <div className="app-container">
             <header className="header-bar">
-                <div className="welcome-text">
-                    Welcome, {userEmail}
+                <div className="header-logo">
+                    <div className="header-logo-icon">NU</div>
+                    <h1>NUboard</h1>
                 </div>
-                <button
-                    onClick={handleLogout}
-                    className="logout-button"
-                >
-                    Logout
-                </button>
+                
+                <div className="welcome-text">
+                    <span>Welcome back,</span>
+                    <span className="user-email">{userName || userEmail}</span>
+                    <button onClick={handleLogout} className="logout-button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
             </header>
 
             <nav className="nav-bar">
@@ -85,6 +101,10 @@ function App() {
                     page === path && <Component key={path} />
                 ))}
             </main>
+
+            <footer className="footer">
+                <p>© 2024 NUboard - Northeastern University Event Management System</p>
+            </footer>
         </div>
     );
 }

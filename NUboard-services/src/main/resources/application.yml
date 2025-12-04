@@ -29,8 +29,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 352891072128-heqdb478kgmq5iap034l9192pvgq5trf.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID:352891072128-heqdb478kgmq5iap034l9192pvgq5trf.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
             scope: profile, email
         provider:
           google:
@@ -41,6 +41,11 @@ spring:
 
 server:
   port: 8080
+
+# Frontend URL configuration
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
 
 # SnowflakeID
 id:

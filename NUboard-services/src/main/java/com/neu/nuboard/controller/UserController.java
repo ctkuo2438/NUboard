@@ -38,14 +38,8 @@ public class UserController {
     }
 
     /**
-     * 获取所有用户 - 仅管理员可访问
-     * @return 用户列表
-     * 1.ResponseEntity是spring框架的类，用来封装http的响应（状态码、头信息和响应体）
-     * 2.List<Map<String, Object>>表示响应体是一个列表，列表中每个元素是一个键值对映射
-     * 3.业务处理逻辑，调用userService的getAllUsers方法获取所有用户
-     * 4.数据转换，将User实体转换为Map<String, Object>
-     * 5.collect(Collectors.toList())将转换后的列表收集为一个列表
-     * 6.return new ResponseEntity<>(response, HttpStatus.OK)返回响应实体，状态码为200
+     * Gets all users. This endpoint is for admin use only.
+     * @return A list of all users.
      */
     @GetMapping
     @PreAuthorize("hasAuthority('USER_VIEW')")
@@ -58,10 +52,10 @@ public class UserController {
     }
 
     /**
-     * 根据ID获取用户
-     * 用户可以查看自己的信息，管理员可以查看所有用户
-     * @param id 用户ID
-     * @return 用户信息
+     * Gets a user by their ID.
+     * A user can view their own information, while an admin can view any user's information.
+     * @param id The user's ID.
+     * @return The user's information.
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_VIEW') or #id == authentication.principal.id.toString()")
@@ -72,11 +66,9 @@ public class UserController {
     }
 
     /**
-     * 创建新用户 - 仅管理员可访问
-     * @param userDTO 用户创建DTO
-     * @return 创建成功的用户
-     *
-     * Restful Api端点，接收前端提交的用户数据并创建新用户
+     * Creates a new user. This endpoint is for admin use only.
+     * @param userDTO The user creation DTO.
+     * @return The successfully created user.
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -87,13 +79,14 @@ public class UserController {
     }
 
     /**
-     * 修改用户信息
-     * 用户可以修改自己的信息，管理员可以修改所有用户
-     * @param id 用户ID
-     * @param userDTO 用户信息DTO
-     * @return 更新后的用户
+     * Updates a user's information.
+     * A user can update their own information, while an admin can update any user's information.
+     * @param id The user's ID.
+     * @param userDTO The user information DTO.
+     * @return The updated user.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER_UPDATE') or @securityService.isOwner(#id, authentication.principal)")
     public ResponseEntity<SuccessResponse<UserCreateDTO>> updateUser(@PathVariable String id, @Validated @RequestBody UserCreateDTO userDTO) {
         User updatedUser = userService.updateUser(id, userDTO);
         UserCreateDTO response = convertUserToDTO(updatedUser);
@@ -101,9 +94,9 @@ public class UserController {
     }
 
     /**
-     * 删除用户 - 仅管理员可访问
-     * @param id 用户ID
-     * @return 无内容响应
+     * Deletes a user. This endpoint is for admin use only.
+     * @param id The user's ID.
+     * @return A response with no content.
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_DELETE')")
@@ -113,10 +106,10 @@ public class UserController {
     }
 
     /**
-     * 搜索用户 - 仅管理员可访问
-     * @param username 用户名关键字（可选）
-     * @param email 邮箱关键字（可选）
-     * @return 匹配的用户列表
+     * Searches for users. This endpoint is for admin use only.
+     * @param username The username keyword (optional).
+     * @param email The email keyword (optional).
+     * @return A list of matching users.
      */
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('USER_VIEW')")
@@ -142,9 +135,9 @@ public class UserController {
     }
 
     /**
-     * 将User实体转换为响应对象
-     * @param user 用户实体
-     * @return 响应DTO
+     * Converts a User entity to a response DTO.
+     * @param user The User entity.
+     * @return The response DTO.
      */
     private UserCreateDTO convertUserToDTO(User user) {
         UserCreateDTO dto = new UserCreateDTO();

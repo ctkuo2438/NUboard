@@ -200,8 +200,15 @@ public class AuthorizationController {
         return ResponseEntity.ok(new SuccessResponse<>(users));
     }
 
+    /**
+     * GET /api/admin/test-setup
+     * Test endpoint to verify AdminController is working.
+     * This endpoint requires ADMIN role for security.
+     *
+     * @return ResponseEntity containing test status information
+     */
     @GetMapping("/test-setup")
-    // No @PreAuthorize annotation - this endpoint is public for testing
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> testSetup() {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "AdminController is working");

@@ -1,21 +1,25 @@
 package com.neu.nuboard.dto;
-//DTO: Data Transfer Object，数据传输对象，用于传输数据
-//DTO是用于在不同层之间传递数据的对象，通常用于表示从客户端到服务器的请求数据或从服务器返回给客户端的数据
-//1. 从客户端接收请求数据 - 例如，当用户提交注册表单时，表单数据会被转换为DTO对象，在Controller层接收客户端数据 
-//   使用@RequestBody UserCreateDTO userDTO接收表单数据
-//2. 将请求数据转换为业务对象 - 例如，用户等待系统处理注册请求（此时用户看到"处理中"图标），
-//   系统在后台将DTO对象转换为User实体类对象，在UserService中
-//3. 将业务对象转换为响应数据 - 例如，将实体类对象转回为DTO对象，在UserController中
-//4. 将响应数据返回给客户端 - 例如，将DTO对象转换为JSON格式返回给客户端，UserController做的
-
+/**
+ * DTO (Data Transfer Object) for user creation and response.
+ * This object is used to transfer user-related data between different layers of the application,
+ * such as from the client to the server for requests, and from the server to the client for responses.
+ *
+ * <h2>Usage Flow:</h2>
+ * <ol>
+ *   <li><b>Receiving Request Data:</b> When a user submits a form (e.g., registration), the data is converted into a {@code UserCreateDTO} object in the controller.</li>
+ *   <li><b>Converting to Business Object:</b> The DTO is then converted into a {@code User} entity within the service layer for business logic processing.</li>
+ *   <li><b>Converting to Response Data:</b> The {@code User} entity is converted back into a {@code UserCreateDTO} in the controller to be sent as a response.</li>
+ *   <li><b>Returning Response to Client:</b> The DTO is serialized into JSON and sent back to the client.</li>
+ * </ol>
+ */
 public class UserCreateDTO {
-    // 用于接收请求的字段
+    // Fields for receiving requests
     private String username;
     private String email;
     private String program;   
     private Long locationId;    
     private Long collegeId;    
-    // 用于响应的字段，在UserController中返回给客户端   
+    // Fields for responses, returned to the client from the UserController
     private String id;
     private String locationName;
     private String collegeName;
