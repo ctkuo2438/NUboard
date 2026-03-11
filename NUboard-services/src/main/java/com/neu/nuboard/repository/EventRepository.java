@@ -40,7 +40,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param creatorId The ID of the event creator.
      * @return List of events created by the specified user.
      */
-    List<Event> findByCreatorIdOrderByStartTimeDesc(String creatorId);
+    List<Event> findByCreatorIdOrderByStartTimeDesc(Long creatorId);
 
     /**
      * Find events by location ID.

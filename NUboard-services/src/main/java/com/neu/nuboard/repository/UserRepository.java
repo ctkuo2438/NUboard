@@ -12,19 +12,19 @@ import com.neu.nuboard.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    // 检查用户名是否已存在
+    // check if username already exists
     boolean existsByUsername(String username);
     
-    // 检查电子邮件是否已存在
+    // check if email already exists
     boolean existsByEmail(String email);
-    
-    // 根据电子邮件查找用户
+
+    // find user by email
     Optional<User> findByEmail(String email);
 
-    // 根据用户名查找用户
+    // find user by username
     Optional<User> findByUsername(String username);
 
-    // 根据用户名或邮箱模糊搜索用户
+    // fuzzy search users by username or email
     @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<User> findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(@Param("keyword") String keyword);
 

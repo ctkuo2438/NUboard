@@ -12,8 +12,8 @@ spring:
 
   sql:
     init:
-      mode: always     # ✅ 替代旧版 initialization-mode
-      platform: postgres # ✅ 确保识别 PostgreSQL（可选）
+      mode: always
+      platform: postgres
 
   jpa:
     hibernate:
@@ -29,8 +29,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-id: ${GOOGLE_CLIENT_ID:352891072128-heqdb478kgmq5iap034l9192pvgq5trf.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
             scope: profile, email
         provider:
           google:
@@ -42,7 +42,12 @@ spring:
 server:
   port: 8080
 
-# 分布式ID生成器配置
+# Frontend URL configuration
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
+
+# SnowflakeID
 id:
   generator:
     workerId: 1
@@ -51,3 +56,21 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
+
+    # Spring Security OAuth2 logging
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.web: DEBUG
+
+    # Transaction logging
+    org.springframework.transaction: DEBUG
+    org.springframework.orm.jpa: TRACE
+
+  # File logging (save logs to file)
+  file:
+    name: logs/application.log
+
+  # Enhanced log patterns
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"

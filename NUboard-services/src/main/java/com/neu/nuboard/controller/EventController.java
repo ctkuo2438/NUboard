@@ -100,7 +100,7 @@ public class EventController {
      */
     @GetMapping("/by-creator/{creatorId}")
     @PreAuthorize("hasAuthority('EVENT_VIEW')")
-    public ResponseEntity<SuccessResponse<List<EventResponseDTO>>> getEventsByCreator(@PathVariable String creatorId) {
+    public ResponseEntity<SuccessResponse<List<EventResponseDTO>>> getEventsByCreator(@PathVariable Long creatorId) {
         List<EventResponseDTO> events = eventService.getEventsByCreatorId(creatorId);
         return ResponseEntity.ok(new SuccessResponse<>(events));
     }

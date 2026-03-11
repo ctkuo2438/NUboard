@@ -120,7 +120,7 @@ public class EventService {
      * @param creatorId The ID of the creator.
      * @return List of EventResponseDTO containing events created by the user.
      */
-    public List<EventResponseDTO> getEventsByCreatorId(String creatorId) {
+    public List<EventResponseDTO> getEventsByCreatorId(Long creatorId) {
         return eventRepository.findAll()
                 .stream()
                 .filter(event -> event.getCreatorId().equals(creatorId))

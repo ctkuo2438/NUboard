@@ -46,10 +46,6 @@ public class User {
     @Column(name = "auth_provider")
     private String authProvider = "google";
 
-    // ADDED: set a Profile completion flag for OAuth2 users
-    @Column(name = "profile_completed", nullable = false)
-    private boolean profileCompleted = false;
-
     /**
      * JPA要求的默认无参构造函数。
      */
@@ -68,7 +64,6 @@ public class User {
         this.email = email;
         this.authProvider = "google";
         this.enabled = true;
-        this.profileCompleted = false;
     }
 
     // Constructor for regular user creation (with program)
@@ -79,7 +74,6 @@ public class User {
         this.email = email;
         this.authProvider = "local";
         this.enabled = true;
-        this.profileCompleted = false;
     }
 
     // Helper methods to work with roles
@@ -168,11 +162,6 @@ public class User {
     public String getAuthProvider() { return authProvider; }
     public void setAuthProvider(String authProvider) { this.authProvider = authProvider; }
 
-    public boolean isProfileCompleted() { return profileCompleted; }
-    public void setProfileCompleted(boolean profileCompleted) {
-        this.profileCompleted = profileCompleted;
-    }
-
     @Override
     public String toString() {
         return "User{" +
@@ -184,7 +173,6 @@ public class User {
                 ", email='" + email + '\'' +
                 ", registrations.size=" + (registrations != null ? registrations.size() : "0") +
                 ", roles.size=" + (userRoles != null ? userRoles.size() : "0") +
-                ", profileCompleted=" + profileCompleted +
                 '}';
     }
 }
